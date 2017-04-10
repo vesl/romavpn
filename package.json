@@ -1,0 +1,9 @@
+{
+	"name":"romavpn",
+	"version":"1.0.0",
+	"description":"Toutes les routes menent a Rome",
+	"author":"Boris Gorzelniaski <boris@slav.rocks>",
+	"scripts":{
+		"start":"node app.js"
+	}
+}
