@@ -1,1 +1,1 @@
-exports.logfile = '/var/log/romavpn_web.log';
+exports.logfile = '/var/log/romavpn.log';

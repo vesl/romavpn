@@ -3,13 +3,14 @@ const logfile = require('../config.js').logfile;
 const fs = require('fs');
 
 const write = (log) => {
-	fs.writeFile(logfile,log,function(err){
-		console.log('File '+logfile+' missing');
+	fs.appendFile(logfile,log+'\n\r',function(err){
+		if(err) console.log('File '+logfile+' missing');
 	});
 }
 
 const log = (c,n,m,level) => {
-	return level+' '+n+' '+messages.query(n,messages[c])+' : '+m;
+	const d = new Date().toUTCString();
+	return d+' -- '+level+' '+n+' '+messages.query(n,messages[c])+' : '+m;
 }
 
 exports.err = (c,n,m) => {
@@ -26,13 +27,15 @@ exports.info = (c,n,m) => {
 }
 
 const messages = {};
-message.query = (n,a) => {
+messages.query = (n,a) => {
+	msg='';
 	a.forEach(function(err){
-		if(err[0] == n) return err[1];
+		if(err[0] == n) msg=err[1];
 	});
+	return msg;
 }
 messages.brs_exec=[
-	[0,'No argument'],
+	[0,''],
 	[1,'Command succesfully executed'],
 	[2,'Error during command exec'],
 	[3,'Command finished']

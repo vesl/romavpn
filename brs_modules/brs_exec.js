@@ -2,33 +2,32 @@ const log = require('./brs_log.js');
 
 const exec = require('child_process').spawn;
 
-const sortargs = (cmd) => {
+const sortcmd = (cmd) => {
 	ret=[];
-	args=cmd.split(' ');
-	args.splice(0,1);
-	if (args.length == 0) return false;
+	const args=cmd.split(' ');
+	const bin=args.splice(0,1)[0];
+	if (args.length == 0) args=[];
 	args.forEach(function(arg){
 		ret.push(arg.trim());
 	});
-	return ret;
+	return {bin:bin,args:args};
 }
 
 exports.exec = (cmd,cf_out,cf_err,cf_close) => {
-	if(!args=sortargs(cmd)) {
-		log.info('brs_exec',0,cmd);
-		args='';
-	}
-	process=exec(cmd+' '+args);
+
+	cmd=sortcmd(cmd);
+	const process=exec(cmd.bin,cmd.args);
+
 	process.stdout.on('data',(data) => {
-		log.info('brs_exec',1,cmd);
-		cf_out(data);
+		log.info('brs_exec',1,cmd.bin+cmd.args);
+		cf_out(data.toString());
 	});
 	process.stderr.on('data',(data) => {
-		log.err('brs_exec',2,cmd);
-		cf_err(data);
+		log.err('brs_exec',2,cmd.bin+cmd.args);
+		cf_err(data.toString());
 	});
-	process.stdout.on('data',(data) => {
-		log.info('brs_exec',3,cmd);
-		cf_out(data);
+	process.on('close',(data) => {
+		log.info('brs_exec',3,cmd.bin+cmd.args);
+		cf_close(data.toString());
 	});
 }
