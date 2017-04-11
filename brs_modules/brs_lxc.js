@@ -1,13 +1,13 @@
-const config=require('../config.js');
-const exec=require('./brs_exec.js');
+const config=require('../config.js').lxc;
+const exec=require('./brs_exec.js').exec;
 
 function lxc(args) {
 	this.name = args.name;
 	this.ip = args.ip;
-	this.subnet = config.lxc_subnet;
-	this.gateway = config.lxc_gateway;
-	this.dns = config.lxc_dns;
-	this.share = config.lxc_share;
+	this.subnet = config.subnet;
+	this.gateway = config.gateway;
+	this.dns = config.dns;
+	this.share = config.share;
 }
 
 lxc.prototype.start = function start() {
@@ -23,10 +23,11 @@ lxc.prototype.create = function() {
 		cf_err: function(data){
 			console.log(data);
 		},
-		cf_finish: function(){
+		cf_close: function(){
 			console.log('Lxc container created');
 		}
 	}
+	exec(args);
 }
 
 lxc.prototype.start = function() {
@@ -38,10 +39,64 @@ lxc.prototype.start = function() {
 		cf_err: function(data){
 			console.log(data);
 		},
-		cf_finish: function (data) {
+		cf_close: function (data) {
 			console.log('Lxc container started');
 		}
 	}
+	exec(args);
 }
+
+lxc.prototype.destroy = function() {
+	args = {
+		cmd : '/usr/bin/lxc-destroy -n '+this.name,
+		cf_out: function(data){
+			console.log(data);
+		},
+		cf_err: function(data){
+			console.log(data);
+		},
+		cf_close: function(data){
+			console.log('Lxc container destroyed');
+		}
+	}
+	exec(args);
+}
+
+lxc.prototype.stop = function() {
+	args = {
+		cmd : '/usr/bin/lxc-stop -n '+this.name,
+		cf_out: function(data){
+			console.log(data);
+		},
+		cf_err: function(data){
+			console.log(data);
+		},
+		cf_close: function(data){
+			console.log('Lxc container stopped');
+		}
+	}
+	exec(args);
+}
+
+lxc.prototype.info = function() {
+	args = {
+		cmd : '/usr/bin/lxc-info -n '+this.name,
+		cf_out: function(data){
+			line=data.split('\n')[1];
+			if(/State:/.exec(line)) {
+				if (/STOPPED/.exec(line)) console.log('STOPPED');
+				else console.log('STARTED');
+			}
+		},
+		cf_err: function(data){
+			console.log(data);
+		},
+		cf_close: function(data){
+			console.log(data);
+		}
+	}
+	exec(args);
+}
+
 
 module.exports = lxc;

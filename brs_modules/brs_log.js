@@ -1,4 +1,4 @@
-const logfile = require('../config.js').logfile;
+const logfile = require('../config.js').log.file;
 
 const fs = require('fs');
 
@@ -15,7 +15,6 @@ const log = (c,n,m,level) => {
 
 exports.err = (c,n,m) => {
 	write(log(c,n,m,'CRITICAL'));
-	exit('Critical error.');
 }
 
 exports.warning = (c,n,m) => {
