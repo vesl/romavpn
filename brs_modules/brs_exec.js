@@ -13,21 +13,21 @@ const sortcmd = (cmd) => {
 	return {bin:bin,args:args};
 }
 
-exports.exec = (cmd,cf_out,cf_err,cf_close) => {
+exports.exec = (args) => {
 
-	cmd=sortcmd(cmd);
+	cmd=sortcmd(args.cmd);
 	const process=exec(cmd.bin,cmd.args);
 
 	process.stdout.on('data',(data) => {
 		log.info('brs_exec',1,cmd.bin+cmd.args);
-		cf_out(data.toString());
+		args.cf_out(data.toString());
 	});
 	process.stderr.on('data',(data) => {
 		log.err('brs_exec',2,cmd.bin+cmd.args);
-		cf_err(data.toString());
+		args.cf_err(data.toString());
 	});
 	process.on('close',(data) => {
 		log.info('brs_exec',3,cmd.bin+cmd.args);
-		cf_close(data.toString());
+		args.cf_close(data.toString());
 	});
 }
