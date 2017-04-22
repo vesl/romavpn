@@ -1,15 +1,48 @@
 const config=require('../config.js').lxc;
+const mongo=require('./brs_mongo.js');
 const exec=require('./brs_exec.js').exec;
 const subnet=require('./brs_subnet');
 
 function lxc(args) {
-	this.name = args.name;
-	this.ip=args.ip;
-	this.subnet = config.subnet;
-	this.gateway = config.gateway;
-	this.dns = config.dns;
-	this.share = config.share;
+	return new Promise((resolve,reject)=>{
+		this.name=args.name;
+		this.load().then((loaded)=>{
+			resolve(loaded);
+		}).catch((error)=>{
+			reject(error);
+		});
+	});
 }
+
+lxc.prototype.load = function() {
+	return new Promise((resolve,reject)=>{
+		db=new mongo();
+		db.connect().then(()=>{
+			db.findOne('lxc',{name:this.name}).then((found)=>{
+				this.id=found._id;
+				this.name=found.name;
+			}).catch((error)=>{
+				log.err('brs_lxc',0,this.name);
+				reject(error);
+			});
+		}).catch((error)=>{reject(error);});
+	});
+};
+
+lxc.prototype.save = function() {
+	return new Promise((resolve,reject)=>{
+		db=new mongo();
+		db.connect.then(()=>{
+			db.save('lxc',{name:name}).then((doc)=>{
+				this.id=doc._id;
+				resolve(doc);
+			}).catch((error)=>{
+				log.err('brs_lxc',1,error);
+				reject(error);
+			});
+		}).catch((error)=>{reject(error);});
+	});
+};
 
 lxc.prototype.info = function() {
 	return new Promise((resolve,reject) => {

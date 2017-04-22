@@ -66,3 +66,8 @@ messages.brs_subnet=[
 	[6,'This subnet already exists'],
 	[7,'This ip already booked']
 ];
+
+messages.brs_lxc=[
+	[0,'Cant find lxc'],
+	[1,'Cant save lxc'],
+];

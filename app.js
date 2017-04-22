@@ -31,11 +31,6 @@ app.get(/^\/js\/.*.js$/,function(req,res){
 });
 
 io.on('connection',function() {
-	const subnet = require('./brs_modules/brs_subnet.js');
-	new subnet({name:'test'}).then((test)=>{
-		test.book('10.1.0.254').then((ok)=>{console.log(test);}).catch((e)=>{console.log(e);});
-		console.log(test.free());
-	}).catch((e)=>{console.log(e)});
 });
 
 io.listen(config.port_io);

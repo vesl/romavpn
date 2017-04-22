@@ -30,6 +30,7 @@ subnet.prototype.save = function() {
 			db = new mongo();
 			db.connect().then(()=>{
 				db.save('subnet',{name:this.name,network:this.network,netmask:this.netmask,booked:this.booked}).then((doc)=>{
+					this.id=doc._id;
 					resolve(doc);
 				}).catch((error)=>{
 					log.err('brs_subnet',1,error);
@@ -40,11 +41,11 @@ subnet.prototype.save = function() {
 	});
 };
 
-subnet.prototype.load = function(query) {
+subnet.prototype.load = function() {
 	return new Promise((resolve,reject) => {
 		db = new mongo();
 		db.connect().then(() => {
-			db.findOne('subnet',query).then((doc)=>{
+			db.findOne('subnet',{name:this.name}).then((doc)=>{
 				this.id=doc._id;
 				this.name=doc.name;
 				this.network=doc.network;
@@ -53,7 +54,7 @@ subnet.prototype.load = function(query) {
 				this.booked=doc.booked;
 				resolve(this);
 			}).catch((error)=>{
-				log.err('brs_subnet',2,error);
+				log.err('brs_subnet',2,this.name);
 				reject(error.name);
 			});
 		}).catch((error)=>{reject(error);});
@@ -86,7 +87,7 @@ subnet.prototype.book = function (ipbook) {
 				this.booked.push(ipbook);
 				db = new mongo();
 				db.connect().then(()=>{
-					db.update('subnet',{booked:this.booked},{name:this.name}).then((doc)=>{
+					db.update('subnet',{booked:this.booked},{_id:this.id}).then((doc)=>{
 						resolve(doc);
 					}).catch((error)=>{
 						log.err('brs_subnet',4,error);
@@ -109,7 +110,7 @@ subnet.prototype.unbook = function(ipunbook) {
 			this.booked.splice(index,1);
 			db = new mongo();
 			db.connect().then(()=>{
-				db.update('subnet',{booked:this.booked},{name:this.name}).then((doc)=>{
+				db.update('subnet',{booked:this.booked},{_id:this.id}).then((doc)=>{
 					resolve(doc);
 				}).catch((error)=>{
 					log.err('brs_subnet',7,error);
@@ -124,7 +125,7 @@ subnet.prototype.remove = function() {
 	return new Promise((resolve,reject)=>{
 		db = new mongo();
 		db.connect().then(()=>{
-			db.remove('subnet',{name:this.name}).then(()=>{
+			db.remove('subnet',{_id:this.id}).then(()=>{
 				resolve(true);
 			}).catch((error)=>{
 				log.err('brs_subnet',5,error);
