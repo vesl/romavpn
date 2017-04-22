@@ -18,9 +18,28 @@ schemas.subnet = new mongoose.Schema({
   		type : String,
   		required : true
   	},
+    gateway: {
+        type : String,
+    },
+    dns : {
+        type : String,
+    },
   	booked: {
   		type : Array,
   	}
+});
+
+schemas.lxc = new mongoose.Schema({
+    name : {
+        type : String,
+        required : true,
+        unique : true,
+    },
+    ip : {
+        type : String,
+        required : true,
+        unique : true,
+    },
 });
 
 schemas.vpnClient = new mongoose.Schema({
@@ -29,11 +48,6 @@ schemas.vpnClient = new mongoose.Schema({
 		required : true,
 		unique : true
 	},
-	ip: {
-		type : String,
-		required : true,
-		unique : true
-	}
 });
 
 function mongo() {
