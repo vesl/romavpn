@@ -31,15 +31,13 @@ app.get(/^\/js\/.*.js$/,function(req,res){
 
 io.on('connection',function() {
     const lxc = require('./brs_modules/brs_lxc.js');
-    new lxc({name:'lxc_test'}).then((exists)=>{
-        console.log('already exist !');
-    }).catch((lxc_test)=>{
-        if(lxc_test.subnet != false) lxc_test.save().then((lxc_test)=>{console.log('saved');}).catch((error)=>{console.log(error);});
-        else console.log('cant up the subnet');
+    new lxc({name:'lxc_test'}).then((lxc_test)=>{
+		lxc_test.destroy().then(()=>{
+			console.log(lxc_test.state);
+		}).catch((e)=>{console.log(e);console.log('catched');});
+    }).catch((notexists)=>{
+    	console.log(notexists);
     });
 });
 
 io.listen(config.port_io);
-
-
-

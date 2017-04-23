@@ -24,8 +24,9 @@ lxc.prototype.load = function() {
 			db.findOne('lxc',{name:this.name}).then((found)=>{
 				this.id=found._id;
 				this.name=found.name;
-                this.ip=found.ip;
-                this.share=config.share;
+                		this.ip=found.ip;
+                		this.share=config.share;
+				this.getState().then(()=>{resolve(this);}).catch(()=>{reject(this);});
 			}).catch((error)=>{
 				log.err('brs_lxc',0,this.name);
 				reject(error);
@@ -63,8 +64,7 @@ lxc.prototype.loadSubnet = function() {
             this.subnet=lxc_subnet;
             resolve(this.subnet);
         }).catch((error)=>{
-            log.err('brs_lxc',2,error);
-            console.log(error);
+            log.err('brs_lxc',2,'lxc_subnet');
             reject(error);
         });
     });
@@ -85,43 +85,108 @@ lxc.prototype.setIp = function() {
     });
 };
 
+
+lxc.prototype.getState = function() {
+	this.state=false;
+	return new Promise((resolve,reject)=>{
+		cmd = '/usr/bin/lxc-info -n '+this.name;
+		exec(cmd).then((out)=>{
+			if(out.match(/State/)) {
+				if(out.match(/STOPPED/)) {
+					this.state=1;
+					resolve(this.state);
+				} else if(out.match(/RUNNING/)) {
+					this.state=2;
+					resolve(this.state);
+				}
+			}		
+		}).catch((error)=>{
+			if(error.match(/doesn't exist/)) {
+				this.state=0;
+				resolve(this.state);
+			}
+			else reject(error);
+		});
+	});
+}
+
 lxc.prototype.create = function() {
     return new Promise((resolve,reject)=>{
-        cmd = '/usr/bin/lxc-create -n '+this.name+' -t romavpn -- --ip '+this.ip+' --netmask '+this.subnet.netmask+' --gateway '+this.subnet.gateway+' --dns '+this.subnet.dns+' --share '+this.share;
-        exec(cmd).then(()=>{resolve(true);}).catch((error)=>{
-            log.err('brs_lxc',4,error);
-            reject(false);
-        });
+	if(this.state == 0) {
+        	cmd = '/usr/bin/lxc-create -n '+this.name+' -t romavpn -- --ip '+this.ip+' --netmask '+this.subnet.netmask+' --gateway '+this.subnet.gateway+' --dns '+this.subnet.dns+' --share '+this.share;
+        	exec(cmd).then(()=>{
+			this.getState().then((state)=>{
+				if(state==1) resolve(state);
+				else reject(state);
+			}).catch((e)=>{reject(e);});
+		}).catch((error)=>{
+            		log.err('brs_lxc',4,error);
+            		reject(false);
+        	});
+	} else {
+		log.err('brs_lxc',9,this.state);
+		reject(this.state);
+	}
     });
 };
 
 lxc.prototype.start = function() {
 	return new Promise((resolve,reject)=>{
-        cmd = '/usr/bin/lxc-start -n '+this.name;
-        exec(cmd).then(()=>{resolve(true);}).catch((error)=>{
-            log.err('brs_lxc',5,error);
-            reject(false);
-        });
-    });
-};
-
-lxc.prototype.destroy = function() {
-	return new Promise((resolve,reject)=>{
-        cmd = '/usr/bin/lxc-destroy -n '+this.name;
-        exec(cmd).then(()=>{resolve(true);}).catch((error)=>{
-            log.err('brs_lxc',6,error);
-            reject(false);
-        });
+	if(this.state == 1) {
+        	cmd = '/usr/bin/lxc-start -d -n '+this.name;
+        	exec(cmd).then(()=>{
+			this.getState().then((state)=>{
+				if(state == 2) resolve(state);
+				else reject(state);
+			}).catch((e)=>{reject(e);});
+		}).catch((error)=>{
+            		log.err('brs_lxc',5,error);
+            		reject(false);
+        	});
+	} else {
+		log.err('brs_lxc',10,this.state);
+		reject(this.state);
+	}
     });
 };
 
 lxc.prototype.stop = function() {
 	return new Promise((resolve,reject)=>{
-        cmd = '/usr/bin/lxc-stop -n '+this.name;
-        exec(cmd).then(()=>{resolve(true);}).catch((error)=>{
-            log.err('brs_lxc',7,error);
-            reject(false);
-        });
+	if(this.state == 2) {
+	        cmd = '/usr/bin/lxc-stop -n '+this.name;
+	        exec(cmd).then(()=>{
+			this.getState().then((state)=>{
+				if(state == 1) resolve(state);
+				else reject(state);
+			}).catch((error)=>{
+	        		log.err('brs_lxc',7,error);
+	        		reject(false);
+			});
+	        });
+	} else {
+		log.err('brs_lxc',11,this.state);
+		reject(this.state);
+	}
+	});
+};
+
+lxc.prototype.destroy = function() {
+	return new Promise((resolve,reject)=>{
+	if(this.state == 1) {
+        	cmd = '/usr/bin/lxc-destroy -n '+this.name;
+        	exec(cmd).then(()=>{
+			this.getState().then((state)=>{
+				if(state == 0) resolve(state);
+				else reject(state);
+			}).catch((error)=>{
+        	    		log.err('brs_lxc',6,error);
+        	    		reject(false);
+        		});
+		});
+	} else {
+		log.err('brs_lxc',12,this.state);
+		reject(this.state);
+	}
     });
 };
 

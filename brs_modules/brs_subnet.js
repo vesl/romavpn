@@ -3,7 +3,6 @@ const log = require('./brs_log.js');
 const mongo = require('./brs_mongo.js');
 
 function subnet(args) {
-console.log(args);
 	return new Promise((resolve,reject)=>{
 		this.name = args.name;
 		this.network = args.network || false;

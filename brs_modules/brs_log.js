@@ -77,4 +77,8 @@ messages.brs_lxc=[
 	[6,'Lxc not stopped'],
 	[7,'Lxc not destroyed'],
 	[8,'No ip set on this LXC'],
+	[9,'State is not 0 lxc not created'],
+	[10,'State is not 1 lxc not started'],
+	[11,'State is not 2 lxc not stopped'],
+	[12,'State is not 2 lxc not destroyed'],
 ];
