@@ -3,19 +3,22 @@ const log = require('./brs_log.js');
 const mongo = require('./brs_mongo.js');
 
 function subnet(args) {
+console.log(args);
 	return new Promise((resolve,reject)=>{
+		this.name = args.name;
+		this.network = args.network || false;
+		this.netmask = args.netmask || false;
+		this.gateway = args.gateway || false;
+		this.dns = args.gateway || false;
+		this.booked = args.booked || [];
 		this.load({name:args.name}).then((loaded)=>{
 			resolve(loaded);	
 		}).catch((notfound)=>{
-			this.name = args.name;
-			this.network = args.network;
-			this.netmask = args.netmask;
 			try { 
 				this.subnet = ip.subnet(this.network,this.netmask);
 			} catch(e) {
 				this.subnet = false;
 			}
-			this.booked = args.booked || [];
 			reject(this);
 		});
 	});
@@ -25,11 +28,11 @@ subnet.prototype.save = function() {
 	return new Promise((resolve,reject) => {
 		if(this.id) {
 			log.err('brs_subnet',6,this.id);
-			reject(false);
+			reject(this.id);
 		} else {
 			db = new mongo();
 			db.connect().then(()=>{
-				db.save('subnet',{name:this.name,network:this.network,netmask:this.netmask,booked:this.booked}).then((doc)=>{
+				db.save('subnet',{name:this.name,network:this.network,netmask:this.netmask,gateway:this.gateway,dns:this.dns,booked:this.booked}).then((doc)=>{
 					this.id=doc._id;
 					resolve(doc);
 				}).catch((error)=>{
@@ -66,7 +69,7 @@ subnet.prototype.free = function (ipfree) {
 	if(!ipfree){
 		current = ip.toLong(this.network)+1;
 		while(this.subnet.contains(ip.fromLong(current))){
-			if (this.booked.indexOf(ip.fromLong(current)) == -1) return ip.fromLong(current);
+			if (this.booked.indexOf(ip.fromLong(current)) == -1 && ip.fromLong(current) != this.gateway && ip.fromLong(current) != this.dns) return ip.fromLong(current);
 			current++;
 		}
 		return false;

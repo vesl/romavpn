@@ -1,19 +1,20 @@
 const config=require('../config.js').lxc;
 const mongo=require('./brs_mongo.js');
 const exec=require('./brs_exec.js').exec;
-const subnet=require('./brs_subnet');
+const subnet=require('./brs_subnet.js');
+const log=require('./brs_log.js');
 
 function lxc(args) {
 	return new Promise((resolve,reject)=>{
 		this.name=args.name;
-        this.ip=false;
-        this.loadSubnet().then(()=>{
-            this.load().then((loaded)=>{
-                resolve(loaded);
-            }).catch((error)=>{
-                reject(error);
-            });
-        }).catch((error)=>{reject(error);});
+	        this.ip=false;
+        	this.loadSubnet().then(()=>{
+            		this.load().then((loaded)=>{
+                		resolve(loaded);
+            		}).catch((error)=>{
+                		reject(this);
+           		});
+        	}).catch((error)=>{reject(error);});
 	});
 }
 
@@ -25,7 +26,7 @@ lxc.prototype.load = function() {
 				this.id=found._id;
 				this.name=found.name;
                 this.ip=found.ip;
-                this.share=config.share+this.name;
+                this.share=config.share;
 			}).catch((error)=>{
 				log.err('brs_lxc',0,this.name);
 				reject(error);
@@ -36,16 +37,24 @@ lxc.prototype.load = function() {
 
 lxc.prototype.save = function() {
 	return new Promise((resolve,reject)=>{
-		db=new mongo();
-		db.connect.then(()=>{
-			db.save('lxc',{name:this.name,ip=this.ip}).then((doc)=>{
-				this.id=doc._id;
-				resolve(doc);
-			}).catch((error)=>{
-				log.err('brs_lxc',1,error);
-				reject(error);
-			});
-		}).catch((error)=>{reject(error);});
+		if(this.ip == false) {
+			log.err('brs_lxc',8,this.ip);
+			reject(this.ip);
+		} else if (this.id) {
+			log.err('brs_lxc',9,this.id);
+			reject(this.id);
+		} else {
+			db=new mongo();
+			db.connect().then(()=>{
+				db.save('lxc',{name:this.name,ip:this.ip}).then((doc)=>{
+					this.id=doc._id;
+					resolve(doc);
+				}).catch((error)=>{
+					log.err('brs_lxc',1,error);
+					reject(error);
+				});
+			}).catch((error)=>{reject(error);});
+		}
 	});
 };
 
@@ -68,7 +77,9 @@ lxc.prototype.setIp = function() {
             log.err('brs_lxc',3,ip);
             reject(false);
         } else {
-            this.subnet.book(ip).then(()=>{resolve(ip);
+            this.subnet.book(ip).then(()=>{
+		this.ip=ip;
+		resolve(ip);
             }).catch((error)=>{reject(error);});
         }
     });

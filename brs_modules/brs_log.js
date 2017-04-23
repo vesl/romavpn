@@ -70,10 +70,11 @@ messages.brs_subnet=[
 messages.brs_lxc=[
 	[0,'Lxc not found'],
 	[1,'Lxc not saved'],
-    [2,'Lxc_subnet not found'],
-    [3,'No more free ip on lxc subnet'],
-    [4,'Lxc not created'],
-    [5,'Lxc not started'],
-    [6,'Lxc not stopped'],
-    [7,'Lxc not destroyed'],
+	[2,'Lxc_subnet not found'],
+	[3,'No more free ip on lxc subnet'],
+	[4,'Lxc not created'],
+	[5,'Lxc not started'],
+	[6,'Lxc not stopped'],
+	[7,'Lxc not destroyed'],
+	[8,'No ip set on this LXC'],
 ];
