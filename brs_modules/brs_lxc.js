@@ -10,7 +10,10 @@ function lxc(args) {
 	        this.ip=false;
         	this.loadSubnet().then(()=>{
             		this.load().then((loaded)=>{resolve(loaded);}).catch((error)=>{reject(this);});
-        	}).catch((error)=>{reject(error);});
+        	}).catch((error)=>{
+                this.subnet=false;
+                reject(this);
+            });
 	});
 }
 
@@ -61,6 +64,7 @@ lxc.prototype.loadSubnet = function() {
             resolve(this.subnet);
         }).catch((error)=>{
             log.err('brs_lxc',2,error);
+            console.log(error);
             reject(error);
         });
     });

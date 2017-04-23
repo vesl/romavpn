@@ -30,13 +30,11 @@ app.get(/^\/js\/.*.js$/,function(req,res){
 });
 
 io.on('connection',function() {
-    const subnet = require('./brs_modules/brs_subnet.js');
-    new subnet({name:'lxc_subnets',network:'10.1.0.0',netmask:'255.255.255.0',gateway:'10.1.0.254',dns:'10.0.0.253'}).then((exists)=>{
-        console.log('this subnet already exists');
-    }).catch((lxc_subnet)=>{
-        lxc_subnet.save().then(()=>{
-            console.log('saved');
-        }).catch((error)=>{console.log('not saved');});
+    const lxc = require('./brs_modules/brs_lxc.js');
+    new lxc({name:'lxc_test'}).then((exists)=>{
+        console.log('already exist !');
+    }).catch((lxc_test)=>{
+        if(lxc_test.subnet != false) lxc_test.save().then((lxc_test)=>{console.log('saved');}).catch((error)=>{console.log(error);});
     });
 });
 
