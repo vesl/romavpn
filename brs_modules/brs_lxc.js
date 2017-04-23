@@ -9,11 +9,7 @@ function lxc(args) {
 		this.name=args.name;
 	        this.ip=false;
         	this.loadSubnet().then(()=>{
-            		this.load().then((loaded)=>{
-                		resolve(loaded);
-            		}).catch((error)=>{
-                		reject(this);
-           		});
+            		this.load().then((loaded)=>{resolve(loaded);}).catch((error)=>{reject(this);});
         	}).catch((error)=>{reject(error);});
 	});
 }
