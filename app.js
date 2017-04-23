@@ -35,6 +35,7 @@ io.on('connection',function() {
         console.log('already exist !');
     }).catch((lxc_test)=>{
         if(lxc_test.subnet != false) lxc_test.save().then((lxc_test)=>{console.log('saved');}).catch((error)=>{console.log(error);});
+        else console.log('cant up the subnet');
     });
 });
 
