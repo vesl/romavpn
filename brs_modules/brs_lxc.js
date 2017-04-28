@@ -6,15 +6,17 @@ const log=require('./brs_log.js');
 
 function lxc(args) {
 	return new Promise((resolve,reject)=>{
+        
 		this.name=args.name;
-	        this.ip=false;
-        	this.loadSubnet().then(()=>{
-            		this.load().then((loaded)=>{resolve(loaded);}).catch((error)=>{reject(this);});
-        	}).catch((error)=>{
-                this.subnet=false;
-                reject(this);
-            });
-	});
+        this.ip=false;
+        
+        this.load().then((loaded)=>{
+            resolve(loaded);
+        }).catch((notexists)=>{
+            reject(this);
+        });
+        
+    });
 }
 
 lxc.prototype.load = function() {
@@ -24,9 +26,13 @@ lxc.prototype.load = function() {
 			db.findOne('lxc',{name:this.name}).then((found)=>{
 				this.id=found._id;
 				this.name=found.name;
-                		this.ip=found.ip;
-                		this.share=config.share;
-				this.getState().then(()=>{resolve(this);}).catch(()=>{reject(this);});
+                this.ip=found.ip;
+                this.share=config.share;
+				this.loadSubnet().then(()=>{
+                    this.getState().then(()=>{resolve(this);}).catch(()=>{reject(this);});
+                }).catch((error)=>{
+                    reject(error);
+                });
 			}).catch((error)=>{
 				log.err('brs_lxc',0,this.name);
 				reject(error);
@@ -46,12 +52,12 @@ lxc.prototype.save = function() {
 		} else {
 			db=new mongo();
 			db.connect().then(()=>{
-				db.save('lxc',{name:this.name,ip:this.ip}).then((doc)=>{
-					this.id=doc._id;
-					resolve(doc);
+				db.save('lxc',{name:this.name,ip:this.ip}).then((saved)=>{
+					this.id=saved._id;
+					resolve(saved);
 				}).catch((error)=>{
-					log.err('brs_lxc',1,error);
-					reject(error);
+					log.err('brs_lxc',1,error.message);
+					reject(error.name);
 				});
 			}).catch((error)=>{reject(error);});
 		}
@@ -187,6 +193,25 @@ lxc.prototype.destroy = function() {
 		log.err('brs_lxc',12,this.state);
 		reject(this.state);
 	}
+    });
+};
+
+lxc.prototype.remove = function() {
+    return new Promise((resolve,reject)=>{
+        db = new mongo();
+        db.connect().then(()=>{
+            db.remove('lxc',{_id:this.id}).then(()=>{
+                this.subnet.unbook(this.ip).then(()=>{
+                    resolve(this);
+                }).catch((error)=>{
+                    log.err('brs_lxc',14,this.ip);
+                    reject(error);
+                });
+            }).catch((error)=>{
+                log.err('brs_lxc',13,this.name);
+                reject(error);
+            });
+        }).catch((error)=>{reject(error);});
     });
 };
 

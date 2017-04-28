@@ -58,13 +58,14 @@ messages.brs_mongo=[
 
 messages.brs_subnet=[
 	[0,'Invalid netmask'],
-	[1,'Cant save subnet'],
-	[2,'Cant find a subnet'],
-	[3,'Ip out of subnet'],
+	[1,'Subnet not saved'],
+	[2,'Cant find a Subnet'],
+	[3,'Ip out of Subnet'],
 	[4,'Cant book ip'],
-	[5,'Cant remove subnet'],
+	[5,'Cant remove Subnet'],
 	[6,'This subnet already exists'],
-	[7,'This ip already booked']
+	[7,'This ip already booked'],
+    [8,'Invalid subnet']
 ];
 
 messages.brs_lxc=[
@@ -81,4 +82,34 @@ messages.brs_lxc=[
 	[10,'State is not 1 lxc not started'],
 	[11,'State is not 2 lxc not stopped'],
 	[12,'State is not 2 lxc not destroyed'],
+    [13,'Lxc not removed'],
+    [14,'Ip not released on lxc_subnet'],
+];
+
+messages.brs_vpn=[
+    [0,'VPN not found'],
+    [1,'Lxc not loaded from VPN'],
+    [2,'This VPN already exists'],
+    [3,'VPN not saved'],
+    [4,'VPN already have a LXC'],
+    [5,'Cant remove Lxc on VPN'],
+    [6,'VPN not removed'],
+];
+
+messages.brs_ovpn=[
+    [0,'Ovpn not found'],
+    [1,'Remote not set'],
+    [2,'Port not set'],
+    [3,'Proto not set (udp/tcp)'],
+    [4,'Pull not set'],
+    [5,'Dev not set (tun/tap)'],
+    [6,'Ping not set'],
+    [5,'Cant remove Lxc on VPN'],
+    [6,'Ping not set'],
+    [7,'Comp-lzo not set'],
+    [9,'Mute not set'],
+    [10,'Tls-client not set'],
+    [11,'Cacert not set'],
+    [12,'Cert not set'],
+    [13,'Startup script not writed'],
 ];

@@ -4,39 +4,43 @@ const mongo = require('./brs_mongo.js');
 
 function subnet(args) {
 	return new Promise((resolve,reject)=>{
+        
 		this.name = args.name;
 		this.network = args.network || false;
 		this.netmask = args.netmask || false;
 		this.gateway = args.gateway || false;
 		this.dns = args.gateway || false;
 		this.booked = args.booked || [];
+        
 		this.load({name:args.name}).then((loaded)=>{
 			resolve(loaded);	
-		}).catch((notfound)=>{
-			try { 
-				this.subnet = ip.subnet(this.network,this.netmask);
-			} catch(e) {
-				this.subnet = false;
-			}
+		}).catch((notexists)=>{
 			reject(this);
 		});
+        
 	});
 }
 
 subnet.prototype.save = function() {
 	return new Promise((resolve,reject) => {
+        try {
+            test = ip.subnet(this.network,this.netmask);
+        } catch(e) {
+            log.err('brs_subnet',8,this.network);
+            reject(e);
+        }
 		if(this.id) {
 			log.err('brs_subnet',6,this.id);
 			reject(this.id);
 		} else {
 			db = new mongo();
 			db.connect().then(()=>{
-				db.save('subnet',{name:this.name,network:this.network,netmask:this.netmask,gateway:this.gateway,dns:this.dns,booked:this.booked}).then((doc)=>{
-					this.id=doc._id;
-					resolve(doc);
+				db.save('subnet',{name:this.name,network:this.network,netmask:this.netmask,gateway:this.gateway,dns:this.dns,booked:this.booked}).then((saved)=>{
+					this.id=saved._id;
+					resolve(this);
 				}).catch((error)=>{
 					log.err('brs_subnet',1,error);
-					reject(error.name);
+					reject(error.message);
 				});
 			}).catch((error)=>{reject(error);});
 		}
