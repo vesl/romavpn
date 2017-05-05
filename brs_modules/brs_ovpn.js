@@ -1,5 +1,5 @@
-const mongo=require('./brs_modules/brs_mongo.js');
-const config=require('./config.js').lxc;
+const mongo=require('./brs_mongo.js');
+const config=require('../config.js').lxc;
 const fs=require('fs');
 
 function ovpn(args){
@@ -53,7 +53,7 @@ ovpn.prototype.load = function() {
     });
 };
 
-ovpn.prototype.setConfig(query) {
+ovpn.prototype.setConfig = function(query) {
     return new Promise((resolve,reject)=>{
         db = new mongo();
         db.connect.then(()=>{

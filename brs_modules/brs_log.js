@@ -41,6 +41,7 @@ messages.query = (n,a) => {
 messages.app=[
 	[0,'Home page not found'],
 	[1,'Js file not found'],
+	[2,'Css file not found'],
 ];
 
 messages.brs_log=[

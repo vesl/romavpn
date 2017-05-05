@@ -56,10 +56,12 @@ function mongo() {
 
 mongo.prototype.connect = function () {
 	return new Promise((resolve,reject) => {
-		this.db=mongoose.createConnection(config.uri,(error)=>{
-			if(error) reject(error);
-			else resolve(this.db);
-		});
+		try {
+			this.db=mongoose.createConnection(config.uri);
+			resolve(true);
+		} catch(error) {
+			reject(error);
+		}
 	});
 }
 
@@ -77,6 +79,17 @@ mongo.prototype.findOne = function(schema,query){
 	return new Promise((resolve,reject) => {
 		const model = this.db.model(schema,schemas[schema]);
 		model.findOne(query).exec((error,doc) => {
+			if(error) reject(error);
+			else if(doc) resolve(doc);
+			else reject(false);
+		});
+	});
+}
+
+mongo.prototype.findAll = function(schema,query){
+	return new Promise((resolve,reject) => {
+		const model = this.db.model(schema,schemas[schema]);
+		model.find(query).exec((error,doc) => {
 			if(error) reject(error);
 			else if(doc) resolve(doc);
 			else reject(false);

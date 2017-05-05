@@ -1,5 +1,3 @@
-const mongo = require('./brs_modules/brs_mongo.js');
-
 exports.app = {
 	port : 80,
 	address : '10.0.0.250',
