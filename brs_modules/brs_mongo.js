@@ -1,5 +1,4 @@
 const config = require('../config.js').mongo;
-const log = require('./brs_log.js');
 const mongoose = require('mongoose');
 
 var schemas = {};
@@ -48,6 +47,29 @@ schemas.vpn = new mongoose.Schema({
 		required : true,
 		unique : true
 	},
+});
+
+schemas.config = new mongoose.Schema({
+	app_path : {
+		type : String,
+		required : true,
+		unique : true,
+	},
+	vpn_subnet : {
+		type : mongoose.Schema.Types.ObjectId,
+		required : true,
+		unique : true,
+	},
+	vpn_gateway : {
+		type : String,
+		required : true,
+		unique : true,
+	},
+	vpn_dns : {
+		type : String,
+		required : true,
+		unique : true,
+	}
 });
 
 function mongo() {

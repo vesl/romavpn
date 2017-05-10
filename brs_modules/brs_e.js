@@ -33,10 +33,26 @@ e.prototype.error = function(module,n,more) {
 	this.log(log)
 };
 
+e.prototype.success = function(module,n){
+	var date = new Date();
+	var message = this.success[module][n][1];
+	var o = {
+		type : 'INFO',
+		module: module,
+		n : n,
+		date : date,
+	}
+	var log = date+' INFO '+module.toUpperCase()+' '+message;
+	this.emit(o);
+	this.log(log)
+
+};
+
 e.prototype.info = function(module,n,more) {	
-	var more = more || '';
 	var date = new Date();
 	var message = this.more[module][n][1];
+	var more = more.toString() || '';
+	if (more instanceof Error) more = 'Javascript Error : '+more.message+' File : '+more.fileName+' Line : '+more.lineNumber;
 	var o = {
 		type : 'INFO',
 		module : module,
@@ -55,11 +71,28 @@ e.prototype.more.handleSocket=[
 	[0,'No module defined on socket request'],
 	[1,'Module not allowed on socket request'],
 	[2,'Action not allowed on socket request'],
-	[3,'Cant list all vpns'],
 ];
 
-e.prototype.more.brs_mongo=[
+e.prototype.more.mongo=[
 	[0,'Connection to db failed'],
+];
+
+e.prototype.more.template=[
+	[0,'Template not found'],
+];
+
+e.prototype.more.config=[
+	[0,'Configuration not created'],
+];
+
+e.prototype.more.vpn=[
+	[0,'Impossible to list all vpns']
+];
+
+
+
+e.prototype.success.config=[
+	[0,'Configuration saved'],
 ];
 
 module.exports = e;

@@ -38,10 +38,10 @@ vpn.main.add = function(){
 		class: 'button button-primary',
 		childContent: 'Create',
 		click : function(){
-			socket.emit('request',{
+			socket.emit('req',{
 				module:'vpn',
 				action:'create',
-				name:$('input[name=vpn-add-name').value
+				name:$('input[name=vpn-add-name').val()
 			});
 		}
 	});

@@ -3,20 +3,19 @@
 const app=require('express')();
 const server=require('http').Server(app);
 const fs=require('fs');
-const config=require('./config.js').app;
 const handleSocket=require('./handleSocket.js');
 
-server.listen(config.port, config.address);
+server.listen(80);
 
 app.get('/',function(req,res){
-	fs.readFile(config.home, (err,data) => {
+	fs.readFile('./static/html/index.html', (err,data) => {
 		if (err) res.status(404).send('');
 		else if(data){
 			res.setHeader('Content-Type','text/html');
 			res.status(200).send(data);
 		}
 	});
-});
+});	
 
 app.get(/^\/js\/.*.js$/,function(req,res){
 	fs.readFile('static'+req.url, (err,data) => {
@@ -41,10 +40,15 @@ app.get(/^\/css\/.*.css$/,function(req,res){
 const io=require('socket.io')(server);
 
 io.on('connection',function(socket) {
-	socket.on('request',function(req){
-		const handle = new handleSocket(req,socket);
-		handle.process();
+	const config=require('./brs_modules/brs_config.js');
+	Config = new config();
+	Config.load(socket).then((ok)=>{}).catch((notready)=>{
+		socket.emit('res',notready);
+	});
+	socket.on('req',function(req){
+		const HandleSocket = new handleSocket(req,socket,Config);
+		HandleSocket.process();
 	});
 });
 
-io.listen(config.port_io);
+io.listen(3000);

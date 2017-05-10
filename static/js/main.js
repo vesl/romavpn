@@ -1,29 +1,30 @@
-const main = {};
+var main = {};
 
-main.initVue = function(){
-	main.vue = new Vue({
-		el : '#main',
-		data : {
-			actions : '',
-			create : '',
-			content : 'Loading content.',
-		},
-		methods : {
-			createClick : false,
-		}
-	});
+main.vues = {};
+
+main.loadTemplate = function(template){
+	if(template == false) return;
+	req = {
+		module : 'template',
+		action : 'load',
+		template : template,
+	}
+	socket.emit('req',req);
 };
 
-main.cleanVue = function(){
-	main.vue.actions = '';
-	main.vue.create = '';
-	main.vue.content = 'Loading content.';
-	main.vue.createClick = false;
+main.displayTemplate = function(res) {
+	if(!res.template) return;
+	switch(res.template) {
+		case 'firstConfiguration':
+			vues.load.firstConfiguration(res);
+			break;
+	}
 };
 
-main.html = function(html,name,uniq){
-	uniq = uniq || false;
-	if (main.vue.content == 'Loading content.') main.vue.content = '';
-	if(uniq == true) $('#'+name).remove();
-	$('#main').append($('<div>').attr('id',name).append(html));
+main.insertHTML = function(html) {
+	$('#main').append(html);
+};
+
+main.cleanHTML = function() {
+	$('#main').html('');
 };

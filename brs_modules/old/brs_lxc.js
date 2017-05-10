@@ -43,22 +43,20 @@ lxc.prototype.load = function() {
 
 lxc.prototype.save = function() {
 	return new Promise((resolve,reject)=>{
-		if(this.ip == false) {
-			log.err('brs_lxc',8,this.ip);
-			reject(this.ip);
-		} else if (this.id) {
-			log.err('brs_lxc',9,this.id);
+		if (this.id) {
 			reject(this.id);
 		} else {
-			db=new mongo();
-			db.connect().then(()=>{
-				db.save('lxc',{name:this.name,ip:this.ip}).then((saved)=>{
-					this.id=saved._id;
-					resolve(saved);
-				}).catch((error)=>{
-					log.err('brs_lxc',1,error.message);
-					reject(error.name);
-				});
+			this.setIp().then(()=>{
+				db=new mongo();
+				db.connect().then(()=>{
+					db.save('lxc',{name:this.name,ip:this.ip}).then((saved)=>{
+						this.id=saved._id;
+						resolve(saved);
+					}).catch((error)=>{
+						log.err('brs_lxc',1,error.message);
+						reject(error.name);
+					});
+				}).catch((error)=>{reject(error);});
 			}).catch((error)=>{reject(error);});
 		}
 	});
@@ -80,7 +78,6 @@ lxc.prototype.setIp = function() {
     return new Promise((resolve,reject)=>{
         ip=this.subnet.free();
         if(!ip) {
-            log.err('brs_lxc',3,ip);
             reject(false);
         } else {
             this.subnet.book(ip).then(()=>{
@@ -119,16 +116,16 @@ lxc.prototype.getState = function() {
 lxc.prototype.create = function() {
     return new Promise((resolve,reject)=>{
 	if(this.state == 0) {
-        	cmd = '/usr/bin/lxc-create -n '+this.name+' -t romavpn -- --ip '+this.ip+' --netmask '+this.subnet.netmask+' --gateway '+this.subnet.gateway+' --dns '+this.subnet.dns+' --share '+this.share;
-        	exec(cmd).then(()=>{
+        cmd = '/usr/bin/lxc-create -n '+this.name+' -t romavpn -- --ip '+this.ip+' --netmask '+this.subnet.netmask+' --gateway '+this.subnet.gateway+' --dns '+this.subnet.dns+' --share '+this.share;
+        exec(cmd).then(()=>{
 			this.getState().then((state)=>{
 				if(state==1) resolve(state);
 				else reject(state);
 			}).catch((e)=>{reject(e);});
 		}).catch((error)=>{
-            		log.err('brs_lxc',4,error);
-            		reject(false);
-        	});
+            log.err('brs_lxc',4,error);
+            reject(false);
+        });
 	} else {
 		log.err('brs_lxc',9,this.state);
 		reject(this.state);
@@ -139,16 +136,16 @@ lxc.prototype.create = function() {
 lxc.prototype.start = function() {
 	return new Promise((resolve,reject)=>{
 	if(this.state == 1) {
-        	cmd = '/usr/bin/lxc-start -d -n '+this.name;
-        	exec(cmd).then(()=>{
+        cmd = '/usr/bin/lxc-start -d -n '+this.name;
+        exec(cmd).then(()=>{
 			this.getState().then((state)=>{
 				if(state == 2) resolve(state);
 				else reject(state);
 			}).catch((e)=>{reject(e);});
 		}).catch((error)=>{
-            		log.err('brs_lxc',5,error);
-            		reject(false);
-        	});
+            log.err('brs_lxc',5,error);
+            reject(false);
+        });
 	} else {
 		log.err('brs_lxc',10,this.state);
 		reject(this.state);

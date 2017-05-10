@@ -10,6 +10,7 @@ alerts.initVue = function(){
 			more : '',
 			error : false,
 			info : false,
+			module : false,
 		}
 	});
 }
@@ -24,7 +25,7 @@ alerts.handle = function(o){
 		alerts.vue.type = 'Info',
 		alerts.vue.info = true;
 	}
-	
+	alerts.vue.module = o.module;
 	alerts.vue.alert = o.message;
 	console.log(o);
 
@@ -34,5 +35,7 @@ alerts.handle = function(o){
 		alerts.vue.type = '',
 		alerts.vue.info=false;
 		alerts.vue.error=false;
+		alerts.vue.module = '';
+		alerts.vue.alert = '';
 	},3000);
 };

@@ -7,10 +7,9 @@
 		<script type="text/javascript" src="/js/jQuery.min.js"></script>
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 		<script type="text/javascript" src="/js/vue.js"></script>
+		<script type="text/javascript" src="/js/vues.js"></script>
 		<script type="text/javascript" src="/js/main.js"></script>
-		<script type="text/javascript" src="/js/form.js"></script>
 		<script type="text/javascript" src="/js/alerts.js"></script>
-		<script type="text/javascript" src="/js/vpn.js"></script>
 		<script type="text/javascript" src="/js/events.socket.io.js"></script>
 		<link rel="stylesheet" href="/css/normalize.css">
 		<link rel="stylesheet" href="/css/skeleton.css">
@@ -23,17 +22,18 @@
 		   		<div class="six columns"><h1><strong>R</strong>omaVPN</h1></div>
 		   		<div class="six columns" id="alerts">
 		   			<div class="alert" v-bind:class="{error : error, info : info}" v-if="alert">
-		   				<strong>{{ type }} {{ number }}</strong><br>{{ alert }}
+		   				<strong>{{ type }} {{ number }} {{ module }}</strong><br>{{ alert }}
 		   			</div>
 		   		</div>
 		   	</div>
-	    </div>
-	    <hr>
-	    <div class="container" id="main">
-	    	<div class="actions" v-if="actions">
-	    		<button class="button button-primary" v-on:click="createClick" v-if="create">{{ create }}</button>
-	    	</div>
-	    	<p>{{ content }}</p>
-	    </div>
+		</div>
+		<hr>
+		<div class="container">
+		    <div class="row" id="menu" v-if="display">
+		    	<button v-for="button in buttons" class="button button-primary menu-button" @click="console.log(button)">{{ button }}</button>
+		    </div>
+		    <div class="container" id="main">
+		    </div>
+		</div>
 	</body>
 </html>
