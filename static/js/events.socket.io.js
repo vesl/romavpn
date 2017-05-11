@@ -5,14 +5,13 @@ alerts.initVue();
 
 //HOME
 vues.load.menu();
-const req = {module:'vpn',action:'list',which:{},target:'main'};
-socket.emit('req',req);
+main.loadTemplate('vpnList');
 
 //RESPONSE ROUTING
 socket.on('res',function(res){
 	console.log(res);
 	template = false;
-	if(res.AppNotReady)  template = 'configuration';
+	if(res.AppNotReady) main.loadTemplate('configuration');
 	else {
 		vues.menu.display=true;
 		if(res.module && res.action) {
@@ -22,10 +21,13 @@ socket.on('res',function(res){
 					break;
 				case 'config':
 					handleConfig(res);
+					break;
+				case 'vpn':
+					handleVpn(res);
+					break;
 			}
 		}
 	}
-	main.loadTemplate(template);
 });
 
 socket.on('e',function(res){
@@ -46,6 +48,14 @@ function handleConfig(res){
 	switch(res.action){
 		case 'create':
 			vues.handle.configuration(res);
+			break;
+	}
+}
+
+function handleVpn(res){
+	switch(res.action){
+		case 'list':
+			$('#vpnList').trigger('vpnList',res);
 			break;
 	}
 }

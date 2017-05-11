@@ -106,9 +106,11 @@ handleSocket.prototype.createConfig = function(){
 
 //2.3 VPN actions calls
 handleSocket.prototype.listvpn = function(){
-	const Vpn = new vpn();
-	Vpn.getAll().then(()=>{
-		
+	const vpn = require('./brs_modules/brs_vpn.js');
+	Vpn = new vpn();
+	Vpn.getAll().then((all)=>{
+		this.req.vpns=all;
+		this.socket.emit('res',this.req);
 	}).catch((error)=>{
 		this.req.error = error;
 		this.e.error('vpn',0,error);

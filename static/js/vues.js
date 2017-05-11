@@ -9,10 +9,12 @@ vues.load.menu = function(){
 		el : '#menu',
 		data : {
 			display:false,
-			buttons : ['VPNS','SUBNETS','HOSTS','CONFIGURATION']
+			buttons : ['vpns','subnets','hosts','configuration']
 		}
 	});
 }
+
+//1.1 Configuration
 
 vues.load.configuration = function(template) {
 	main.insertHTML(template.html);
@@ -78,6 +80,28 @@ vues.load.configuration = function(template) {
 	});
 };
 
+//1.2 Vpns 
+vues.load.vpn = {};
+
+vues.load.vpn.list = function(res){
+	main.cleanHTML();
+	main.insertHTML(res.html);
+	$('#vpnList').on('vpnList',function(event,res){
+		vues.vpn = new Vue({
+			el : '#vpnList',
+			data : {
+				vpns : res.vpns,
+				novpn : 'No vpn created yet'
+			}
+		});
+	});
+	socket.emit('req',{
+		module : 'vpn',
+		action : 'list',
+		which : {}
+	});
+};
+
 //2 Handle - Once client did action, handle response from server
 
 vues.handle = {};
@@ -95,3 +119,5 @@ vues.handle.configuration = function(res){
 		if(res.error.configNotSaved) vue.errors.push('Database error config not saved');
 	}
 };
+
+vues.handle.vpn = {};

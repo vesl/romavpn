@@ -15,8 +15,11 @@ main.loadTemplate = function(template){
 main.displayTemplate = function(res) {
 	if(!res.template) return;
 	switch(res.template) {
-		case 'firstConfiguration':
-			vues.load.firstConfiguration(res);
+		case 'configuration':
+			vues.load.configuration(res);
+			break;
+		case 'vpnList':
+			vues.load.vpn.list(res);
 			break;
 	}
 };
