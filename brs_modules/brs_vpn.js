@@ -4,12 +4,12 @@ function vpn(){
 
 }
 
-vpn.prototype.getAll = function(){
+vpn.prototype.get = function(which){
 	return new Promise((res,rej)=>{
 		ret = {};
 		db = new mongo();
 		db.connect().then(()=>{
-			db.findAll('vpn',{}).then((all)=>{
+			db.findAll('vpn',which).then((all)=>{
 				res(all);
 			}).catch((error)=>{
 				ret.listAllVpns = false;

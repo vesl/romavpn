@@ -1,0 +1,15 @@
+<div id="config">
+	<div class="alert error" v-if="errors.length > 0">
+		<li v-for="error in errors">{{ error }}</li>
+	</div>
+	<p v-else>{{ message }}</p>
+	<br>
+	<p v-for="config in configs">
+		<label for="config.name">{{ configuration.title }}</label>
+		<input :name="config.name" type="text" v-model="config.value" :placeholder="config.placeholder">
+		<small>{{ configuration.description }}</small>	
+	</p>
+	<p>
+		<button class="button button-primary" @click="sendConfig">Next</button>
+	</p>
+</div>

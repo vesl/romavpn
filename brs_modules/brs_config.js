@@ -2,10 +2,10 @@ const mongo = require('./brs_mongo.js');
 const fs = require('fs');
 
 function config () {
-	this.app_path = false;
-	this.vpn_subnet = false;
-	this.vpn_gateway = false;
-	this.vpn_dns = false;
+	this.app_path = '';
+	this.vpn_subnet = '';
+	this.vpn_gateway = '';
+	this.vpn_dns = '';
 }
 
 config.prototype.load = function(){
@@ -32,11 +32,11 @@ config.prototype.load = function(){
 
 config.prototype.check = function(){
 	ret = {};
-	if(!this.app_path || !fs.existsSync(this.app_path)) ret.appPath=true;
-	if(!this.vpn_network || this.vpn_network == '') ret.vpnNetwork=true;
-	if(!this.vpn_netmask || this.vpn_netmask == '') ret.vpnNetmask=true;
-	if(!this.vpn_gateway || this.vpn_gateway == '') ret.vpnGateway=true;
-	if(!this.vpn_dns || this.vpn_dns == '') ret.vpnDns=true;
+	if(!fs.existsSync(this.app_path)) ret.appPath=true;
+	if(this.vpn_network == '') ret.vpnNetwork=true;
+	if(this.vpn_netmask == '') ret.vpnNetmask=true;
+	if(this.vpn_gateway == '') ret.vpnGateway=true;
+	if(this.vpn_dns == '') ret.vpnDns=true;
 	if(Object.keys(ret).length == 0) return true;
 	else return ret;
 };

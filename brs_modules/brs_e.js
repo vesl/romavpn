@@ -77,16 +77,12 @@ e.prototype.more.mongo=[
 	[0,'Connection to db failed'],
 ];
 
-e.prototype.more.template=[
-	[0,'Template not found'],
-];
-
 e.prototype.more.config=[
-	[0,'Configuration not created'],
+    [0,'Could not load html template'],
+	[1,'Configuration not created'],
 ];
 
 e.prototype.more.vpn=[
-	[0,'Impossible to list all vpns']
 ];
 
 
