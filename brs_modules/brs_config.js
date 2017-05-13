@@ -1,5 +1,5 @@
 const mongo = require('./brs_mongo.js');
-const fs = require('fs');
+const subnet = require('./brs_subnet.js');
 
 function config () {
 	this.app_path = '';
@@ -20,7 +20,16 @@ config.prototype.load = function(){
 				this.vpn_gateway = config.vpn_gateway;
 				this.vpn_dns = config.vpn_dns;
 
-				res(config);
+				Subnet = new subnet();
+				Subnet.load({_id:this.vpn_subnet}).then(()=>{
+					this.vpn_network = Subnet.network;
+					this.vpn_netmask = Subnet.netmask;
+					res(config);
+				}).catch((error)=>{
+					ret.subnetNotFound = true;
+					ret.error = error;
+					rej(ret);
+				});
 			}).catch((error)=>{
 				ret.AppNotReady = true;
 				ret.error = error;

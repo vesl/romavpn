@@ -4,7 +4,7 @@ function handleSocket(req,socket,config) {
 	this.req = req;
 	this.socket = socket;
 	this.config = config;
-	this.allowedModules = ['config','vpn'];
+	this.allowedModules = ['config','vpn','vpnAdd'];
 	this.allowedActions = ['load','update'];
 	this.e = new e(socket);
 }
@@ -44,6 +44,9 @@ handleSocket.prototype.process = function(){
 		case 'vpn':
 			this.handleVpn();
 			break;
+		case 'vpnAdd':
+			this.handleVpnAdd();
+			break;
 	} 
 };
 
@@ -56,6 +59,7 @@ handleSocket.prototype.handleConfig = function(){
 	switch(this.req.action){
         case 'load':
             this.loadConfig();
+            break;
 		case 'update':
 			this.updateConfig();
 			break;
@@ -66,10 +70,18 @@ handleSocket.prototype.handleConfig = function(){
 handleSocket.prototype.handleVpn = function(){
 	switch(this.req.action){
 		case 'load':
-			this.loadVpn(res.which);
-		break;
+			this.loadVpn();
+			break;
 	}
 };
+
+handleSocket.prototype.handleVpnAdd = function(){
+	switch(this.req.action){
+		case 'load':
+			this.loadVpnAdd();
+			break;
+	}
+}
 
 //2 Modules actions calls
 
@@ -78,7 +90,7 @@ handleSocket.prototype.loadConfig = function(){
     this.loadTemplate('config').then((html)=>{
         this.req.config = this.config;
         this.req.html = html;
-        this.socket.emit('req',this.req);
+        this.socket.emit('res',this.req);
     }).catch((error)=>{
         this.req.error = error;
         this.e.error('config',0,error);
@@ -89,9 +101,9 @@ handleSocket.prototype.loadConfig = function(){
 handleSocket.prototype.updateConfig = function(){
     if(!this.req.config._id) {
         this.config.save(this.req.config).then((saved)=>{
-            this.req.configCreated = true;
+            this.req.success = true;
             this.req.config = saved;
-            this.e.success('config',0);
+            this.e.info('config',0);
             this.socket.emit('res',this.req);
         }).catch((error)=>{
             this.req.error = error;
@@ -104,18 +116,36 @@ handleSocket.prototype.updateConfig = function(){
 };
 
 //2.2 VPN 
-handleSocket.prototype.loadVpn = function(which){
-	const vpn = require('./brs_modules/brs_vpn.js');
-	Vpn = new vpn();
-	Vpn.get(which).then((all)=>{
-		this.req.vpns=all;
-		this.socket.emit('res',this.req);
+handleSocket.prototype.loadVpn = function(){
+	this.loadTemplate('vpn').then((html)=>{
+		this.req.html=html;
+		const vpn = require('./brs_modules/brs_vpn.js');
+		Vpn = new vpn();
+		Vpn.get(this.req.which).then((all)=>{
+			this.req.vpns=all;
+			this.socket.emit('res',this.req);
+		}).catch((error)=>{
+			this.req.error = error;
+			this.e.error('vpn',1,error);
+			this.socket.emit('res',this.req);
+		});
 	}).catch((error)=>{
 		this.req.error = error;
 		this.e.error('vpn',0,error);
 		this.socket.emit('res',this.req);
 	});
 };
+
+handleSocket.prototype.loadVpnAdd = function(){
+	this.loadTemplate('vpnAdd').then((html)=>{
+		this.req.html=html;
+		this.socket.emit('res',this.req);
+	}).catch((error)=>{
+		this.req.error = error;
+		this.e.error('vpn',2,error);
+		this.socket.emit('res',this.req);
+	});
+}
 
 handleSocket.prototype.createvpn = function() {
 };

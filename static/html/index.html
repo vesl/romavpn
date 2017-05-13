@@ -30,7 +30,7 @@
 		<hr>
 		<div class="container">
 		    <div class="row" id="menu" v-if="display">
-		    	<button v-for="button in buttons" class="button button-primary menu-button" @click="console.log(button)">{{ button }}</button>
+		    	<button v-for="button in buttons" class="button-primary menu-button" @click="call(button)">{{ button }}</button>
 		    </div>
 		</div>
 		<div class="container" id="main">

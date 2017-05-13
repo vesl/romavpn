@@ -12,18 +12,6 @@ main.loadTemplate = function(template){
 	socket.emit('req',req);
 };
 
-main.displayTemplate = function(res) {
-	if(!res.template) return;
-	switch(res.template) {
-		case 'configuration':
-			vues.load.configuration(res);
-			break;
-		case 'vpnList':
-			vues.load.vpn.list(res);
-			break;
-	}
-};
-
 main.insertHTML = function(html) {
 	$('#main').append(html);
 };

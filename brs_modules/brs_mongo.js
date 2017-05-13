@@ -1,4 +1,3 @@
-const config = require('../config.js').mongo;
 const mongoose = require('mongoose');
 
 var schemas = {};
@@ -79,7 +78,7 @@ function mongo() {
 mongo.prototype.connect = function () {
 	return new Promise((resolve,reject) => {
 		try {
-			this.db=mongoose.createConnection(config.uri);
+			this.db=mongoose.createConnection('mongodb://localhost/romavpndev');
 			resolve(true);
 		} catch(error) {
 			reject(error);

@@ -4,14 +4,23 @@ var vues = {};
 
 vues.call = {};
 
+//1.1 Config
+
 vues.call.config = function(){
-    socket.emit({module:'config',
-                 action:'load',
-    });
+    socket.emit('req',{module:'config',action:'load'});
 };
 
-vues.call.vpn.list = function(){
+//1.2 VPN
+
+vues.call.vpn = function(which){
+	which = which || {};
+	socket.emit('req',{module:'vpn',action:'load',which:which});
 };
+
+
+vues.call.vpnAdd = function(){
+	socket.emit('req',{module:'vpnAdd',action:'load'});
+}
 
 //2 Load - Create vue
 
@@ -21,8 +30,13 @@ vues.load.menu = function(){
 	vues.menu = new Vue({
 		el : '#menu',
 		data : {
-			display:true,
-			buttons : ['vpns','subnets','hosts','configuration']
+			display: true,
+			buttons : ['vpn','subnet','host','config']
+		},
+		methods : {
+			call : function(module){
+				vues.call[module]();
+			}
 		}
 	});
 };
@@ -34,7 +48,6 @@ vues.load.config = function(res) {
 	vues.config = new Vue({
 		el : '#config',
 		data : {
-			message : 'You need to configure application before use it',
 			errors : [],
 			configs : {
 				app_path : {
@@ -96,14 +109,47 @@ vues.load.config = function(res) {
 //2.2 Vpns 
 vues.load.vpn = {};
 
-vues.load.vpn.list = function(res){
+vues.load.vpn = function(res){
+	main.cleanHTML();
+	main.insertHTML(res.html);
+
+	vues.vpn = new Vue({
+		el: '#vpn',
+		data : {
+			novpn : 'There is no VPN configured yet',
+			vpns : res.vpns,
+		},
+		methods : {
+			call : function(){
+				vues.call.vpnAdd();
+			}
+		}
+	});
 };
+
+vues.load.vpnAdd = function(res){
+	main.cleanHTML();
+	main.insertHTML(res.html);
+
+	vues.vpn = new Vue({
+		el: '#vpnAdd',
+		data : {
+			vpn_name : ''
+		},
+		methods : {
+			add : function(){
+				console.log('added !');
+			}
+		}
+	});
+}
 
 //3 Handle - Once client did action handle response from server
 
 vues.handle = {};
 
 vues.handle.config = function(res){
+	console.log(res);
 	if(res.error) {
 		if(res.error.appPath) vues.config.errors.push('Application path must be set and path have to exists on the server');
 		if(res.error.vpnNetwork) vues.config.errors.push('VPN network must be set');
@@ -113,10 +159,10 @@ vues.handle.config = function(res){
 		if(res.error.invalidSubnet) vues.config.errors.push('Couple network / netmask is a wrong subnet');
 		if(res.error.subnetNotSaved) vues.config.errors.push('Database error subnet not saved');
 		if(res.error.configNotSaved) vues.config.errors.push('Database error config not saved');
-	} else {
-        delete main.AppNotReady;
-        vues.menu.display = true;
-        vues.call.vpn.list();
+	} else if(res.success){
+		delete main.AppNotReady;
+		vues.menu.display = true;
+        vues.call.vpn({});
     }
 };
 

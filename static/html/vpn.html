@@ -1,0 +1,8 @@
+<div id="vpn">
+	<button class="button" @click="call">add a vpn</button>
+	<div v-if="vpns.length > 0">
+		<div class="vpn-sum" v-for="vpn in vpns">
+		</div>
+	</div>
+	<div v-else>{{ novpn }}</div>
+</div>

@@ -8,23 +8,19 @@ alerts.initVue = function(){
 			alert : '',
 			n : '',
 			more : '',
+			module : '',
 			error : false,
 			info : false,
-			module : false,
 		}
 	});
 }
 
 alerts.handle = function(o){
 	
-	if (o.type == 'ERROR') {
-		alerts.vue.type = 'Error',
-		alerts.vue.number = o.n,
-		alerts.vue.error = true;
-	} else if (o.type == 'INFO') {
-		alerts.vue.type = 'Info',
-		alerts.vue.info = true;
-	}
+	if (o.type == 'ERROR') alerts.vue.error = true;
+	else if (o.type == 'INFO') alerts.vue.info = true;
+	alerts.vue.type = o.type;
+	alerts.vue.number = o.n,
 	alerts.vue.module = o.module;
 	alerts.vue.alert = o.message;
 	console.log(o);
