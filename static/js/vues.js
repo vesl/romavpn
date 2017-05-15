@@ -88,7 +88,7 @@ vues.load.config = function(res) {
 			}
 		},
 		methods : {
-			sendConfig : function(){
+			update : function(){
 				this.errors = [];
 				socket.emit('req',{
 					module:'config',
@@ -134,11 +134,17 @@ vues.load.vpnAdd = function(res){
 	vues.vpn = new Vue({
 		el: '#vpnAdd',
 		data : {
+			errors:[],
 			vpn_name : ''
 		},
 		methods : {
 			add : function(){
-				console.log('added !');
+				errors:[],
+				socket.emit('req',{
+					module:'vpnAdd',
+					action:'add',
+					vpn_name: this.vpn_name
+				});
 			}
 		}
 	});
@@ -160,7 +166,6 @@ vues.handle.config = function(res){
 		if(res.error.subnetNotSaved) vues.config.errors.push('Database error subnet not saved');
 		if(res.error.configNotSaved) vues.config.errors.push('Database error config not saved');
 	} else if(res.success){
-		delete main.AppNotReady;
 		vues.menu.display = true;
         vues.call.vpn({});
     }

@@ -5,29 +5,29 @@ alerts.initVue();
 
 //HOME
 vues.load.menu();
-vues.call.vpn({});
+
+socket.on('appReady',function(ready){
+	if(ready == false) {
+		vues.menu.display = false;
+		vues.call.config();
+	} 
+	else vues.call.vpn({});
+});
 
 //RESPONSE ROUTING
 socket.on('res',function(res){
 	console.log(res);
-	if(res.AppNotReady) {	
-		vues.menu.display = false;
-        main.AppNotReady = true;
-        vues.call.config();
-    } else {
-        if(main.AppNotReady)handleConfig(res);
-        else if(res.module && res.action) {
-			switch(res.module) {
-                case 'config':
-					handleConfig(res);
-					break;
-				case 'vpn':
-					handleVpn(res);
-					break;
-				case 'vpnAdd':
-					handleVpnAdd(res);
-					break;
-			}
+    if(res.module && res.action) {
+		switch(res.module) {
+            case 'config':
+				handleConfig(res);
+				break;
+			case 'vpn':
+				handleVpn(res);
+				break;
+			case 'vpnAdd':
+				handleVpnAdd(res);
+				break;
 		}
 	}
 });

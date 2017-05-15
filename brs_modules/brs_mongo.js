@@ -23,7 +23,7 @@ schemas.subnet = new mongoose.Schema({
         type : String,
     },
   	booked: {
-  		type : Array,
+  		type : String,
   	}
 });
 

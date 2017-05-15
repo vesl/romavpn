@@ -42,10 +42,13 @@ const io=require('socket.io')(server);
 io.on('connection',function(socket) {
 	const config=require('./brs_modules/brs_config.js');
 	Config = new config();
-	Config.load(socket).then((ok)=>{}).catch((notready)=>{
-		socket.emit('res',notready);
+	Config.load(socket).then((ok)=>{
+		socket.emit('appReady',true);
+	}).catch((notready)=>{
+		socket.emit('appReady',false);
 	});
 	socket.on('req',function(req){
+		console.log(req);
 		const HandleSocket = new handleSocket(req,socket,Config);
 		HandleSocket.process();
 	});

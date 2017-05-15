@@ -67,14 +67,19 @@ e.prototype.more.config=[
 
 e.prototype.more.vpn=[
 	[0,'Could not load vpn template'],
-	[1,'Could not get vpns from database'],
+	[1,'Could not get VPNs from database'],
 	[2,'Could not load vpnAdd template'],
+	[3,'Could not save VPN'],
 ];
 
 
 e.prototype.done = {};
 e.prototype.done.config=[
 	[0,'Configuration updated'],
+];
+
+e.prototype.done.vpn = [
+	[0,'VPN added'],
 ];
 
 module.exports = e;

@@ -6,7 +6,7 @@ function subnet(){
 	this.name = false;
 	this.network = false;
 	this.netmask = false;
-	this.booked = [];
+	this.booked = '{}';
 }
 
 subnet.prototype.load = function(query){
@@ -19,7 +19,7 @@ subnet.prototype.load = function(query){
 				this.name = found.name;
 				this.network = found.network;
 				this.netmask = found.netmask;
-				this.booked = found.booked;
+				this.booked = JSON.parse(found.booked);
 				this.subnet = ip.subnet(this.network,this.netmask);
 				res(found);
 			}).catch((error)=>{
@@ -42,6 +42,7 @@ subnet.prototype.save = function() {
 		}
 		try {
 			this.subnet = ip.subnet(this.network,this.netmask);
+			this.booked = JSON.stringify({broadcast:this.subnet.broadcastAddress});
 		} catch(error){
 			ret.invalidSubnet=true;
 			rej(ret);
@@ -66,5 +67,26 @@ subnet.prototype.save = function() {
 		}
 	});
 };
+
+subnet.prototype.book = function(host,book){
+	return new Promise((res,rej)=>{
+		book = book || false;
+		ret = {};
+		current = ip.toLong(this.network)+1;
+		while(this.subnet.contains(ip.fromLong(current))){
+			free = true;
+			for(book in this.booked){
+				if(ip.fromLong(current) == this.booked[book]) {
+					free = false;
+					break;
+				}
+			}
+			if(free == true) return res(ip.fromLong(current));
+			else current++;
+		}
+		ret.subnetFull = true;
+		rej(ret);
+	});
+}
 
 module.exports=subnet;

@@ -5,7 +5,7 @@ function handleSocket(req,socket,config) {
 	this.socket = socket;
 	this.config = config;
 	this.allowedModules = ['config','vpn','vpnAdd'];
-	this.allowedActions = ['load','update'];
+	this.allowedActions = ['load','update','add'];
 	this.e = new e(socket);
 }
 
@@ -80,6 +80,9 @@ handleSocket.prototype.handleVpnAdd = function(){
 		case 'load':
 			this.loadVpnAdd();
 			break;
+		case 'add':
+			this.addVpnAdd();
+			break;
 	}
 }
 
@@ -121,7 +124,7 @@ handleSocket.prototype.loadVpn = function(){
 		this.req.html=html;
 		const vpn = require('./brs_modules/brs_vpn.js');
 		Vpn = new vpn();
-		Vpn.get(this.req.which).then((all)=>{
+		Vpn.load(this.req.which).then((all)=>{
 			this.req.vpns=all;
 			this.socket.emit('res',this.req);
 		}).catch((error)=>{
@@ -147,7 +150,19 @@ handleSocket.prototype.loadVpnAdd = function(){
 	});
 }
 
-handleSocket.prototype.createvpn = function() {
+handleSocket.prototype.addVpnAdd= function() {
+	const vpn = require('./brs_modules/brs_vpn.js');
+	Vpn = new vpn();
+	Vpn.name = this.req.vpn_name;
+	Vpn.add().then((saved)=>{
+		this.req.vpn = saved;
+		this.e.info('vpn',0);
+		this.socket.emit('res',this.req);
+	}).catch((error)=>{
+		this.req.error = error;
+		this.e.error('vpn',3,error);
+		this.socket.emit('res',this.req);
+	});
 };
 
 module.exports = handleSocket;
