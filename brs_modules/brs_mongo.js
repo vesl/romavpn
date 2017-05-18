@@ -28,13 +28,8 @@ schemas.subnet = new mongoose.Schema({
 });
 
 schemas.lxc = new mongoose.Schema({
-    name : {
-        type : String,
-        required : true,
-        unique : true,
-    },
-    ip : {
-        type : String,
+    state : {
+        type : Number,
         required : true,
         unique : true,
     },

@@ -6,7 +6,6 @@ function vpn(){
 	this.subnets = false;
 	this.ovpn = false;
 	this.lxc = false;
-	this.config = false;
 }
 
 vpn.prototype.load = function(which){
@@ -39,8 +38,19 @@ vpn.prototype.add = function(){
 			Lxc = new lxc();
 			Lxc.name = this.name;
 			Lxc.add().then((saved)=>{
-				ret.lxc = saved;
-				res(ret);
+				this.lxc = saved.id;
+                db = new mongo();
+                db.connect().then(()=>{
+                    db.save('vpn',{lxc:this.lxc}).then((saved)=>{
+                        this.id = saved._id;
+                        ret.vpn = this;
+                        res(ret);
+                    }).catch((error)=>{
+                        ret.vpnNotSaved = true;
+                        ret.error = error;
+                        rej(ret);
+                    });
+                }).catch((error)=>{rej(error);});
 			}).catch((error)=>{
 				ret.lxcNotSaved = true;
 				ret.error = error;
