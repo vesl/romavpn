@@ -131,7 +131,7 @@ vues.load.vpnAdd = function(res){
 	main.cleanHTML();
 	main.insertHTML(res.html);
 
-	vues.vpn = new Vue({
+	vues.vpnAdd = new Vue({
 		el: '#vpnAdd',
 		data : {
 			errors:[],
@@ -155,7 +155,6 @@ vues.load.vpnAdd = function(res){
 vues.handle = {};
 
 vues.handle.config = function(res){
-	console.log(res);
 	if(res.error) {
 		if(res.error.appPath) vues.config.errors.push('Application path must be set and path have to exists on the server');
 		if(res.error.vpnNetwork) vues.config.errors.push('VPN network must be set');
@@ -171,4 +170,12 @@ vues.handle.config = function(res){
     }
 };
 
-vues.handle.vpn = {};
+vues.handle.vpnAdd = function(res){
+	if(res.error) {
+		if(res.error.validationError){
+			if(res.error.validationError.alreadyExists) vues.vpnAdd.errors.push('This VPN already exists');
+		}
+		if(res.error.lxcNotSaved) vues.vpnAdd.errors.push('Couldnt save LXC container');
+		if(res.error.vpnNotSaved) vues.vpnAdd.errors.push('Couldnt save VPN');
+	} else vues.call.vpn({});
+};

@@ -43,11 +43,11 @@ config.prototype.check = function(){
 	ret = {};
 	const fs = require('fs');
 	if(!fs.existsSync(this.app_path)) ret.appPath=true;
-	if(this.vpn_network == '') ret.vpnNetwork=true;
-	if(this.vpn_netmask == '') ret.vpnNetmask=true;
-	if(this.vpn_gateway == '') ret.vpnGateway=true;
-	if(this.vpn_dns == '') ret.vpnDns=true;
-	if(Object.keys(ret).length == 0) return true;
+	if(this.vpn_network === '') ret.vpnNetwork=true;
+	if(this.vpn_netmask === '') ret.vpnNetmask=true;
+	if(this.vpn_gateway === '') ret.vpnGateway=true;
+	if(this.vpn_dns === '') ret.vpnDns=true;
+	if(Object.keys(ret).length === 0) return true;
 	else return ret;
 };
 

@@ -36,7 +36,7 @@ handleSocket.prototype.loadTemplate = function(name){
 };
 
 handleSocket.prototype.process = function(){
-	if(this.check() == false) return false;
+	if(this.check() === false) return false;
 	switch(this.req.module) {
 		case 'config':
 			this.handleConfig();
@@ -155,6 +155,7 @@ handleSocket.prototype.addVpnAdd= function() {
 	Vpn = new vpn();
 	Vpn.name = this.req.vpn_name;
 	Vpn.add().then((saved)=>{
+		this.req.success = true;
 		this.req.vpn = saved;
 		this.e.info('vpn',0);
 		this.socket.emit('res',this.req);

@@ -31,8 +31,7 @@ schemas.lxc = new mongoose.Schema({
     state : {
         type : Number,
         required : true,
-        unique : true,
-    },
+    }
 });
 
 schemas.vpn = new mongoose.Schema({
@@ -82,11 +81,12 @@ mongo.prototype.connect = function () {
 }
 
 mongo.prototype.save = function(schema,values){
-	return new Promise((resolve,reject) => {
+	return new Promise((res,rej) => {
 		const model = this.db.model(schema,schemas[schema]);
 		model.create(values,(err,doc) => {
-			if(err) reject(err);
-			else if(doc) resolve(doc);
+			if(err) rej(err);
+			else if(doc) res(doc);
+			else rej(false);
 		});
 	});
 }

@@ -92,22 +92,27 @@ subnet.prototype.book = function(host,book){
             current = ip.toLong(this.network)+1;
             while(this.subnet.contains(ip.fromLong(current))){
                 free = true;
-                for(host in this.booked){
-                    if(ip.fromLong(current) == this.booked[host]) {
+                for(book in this.booked){
+                    if(ip.fromLong(current) == this.booked[book]) {
                         free = false;
                         break;
                     }
                 }
-                if(free == true) {
-                    this.booked[host] = book;
-                    this.update({booked : JSON.stringify(this.booked)}).then(()=>{
-                        return res(ip.fromLong(current));
-                    }).catch((error)=>{rej(error);});
+                if(free === true) {
+					this.booked[host] = ip.fromLong(current);
+					break;
                 }
                 else current++;
             }
-            ret.subnetFull = true;
-            rej(ret);
+            if(this.booked[host]) {
+                this.update({booked : JSON.stringify(this.booked)}).then(()=>{
+    					res(this.booked[host]);
+                }).catch((error)=>{rej(error);});
+            }
+            else {
+            	ret.subnetFull = true;
+            	rej(ret);
+            }
         } else {
             try {
                 this.subnet.contains(book);
@@ -122,7 +127,7 @@ subnet.prototype.book = function(host,book){
                 this.update({booked : JSON.stringify(this.booked)}).then(()=>{
                     return res(book);
                 }).catch((error)=>{rej(error);});
-            } catch((error)) {
+            } catch(error) {
                 ret.invalidIp = true;
                 ret.error = book;
                 rej(ret);

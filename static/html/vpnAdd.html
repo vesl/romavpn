@@ -1,4 +1,8 @@
 <div id="vpnAdd">
+	<div class="alert error" v-if="errors.length > 0">
+		<li v-for="error in errors">{{ error }}</li>
+	</div>
+	<br>
 	<p>
 		<label for="name">Name</label>
 		<input type="text" name="name" placeholder="name" v-model="vpn_name">

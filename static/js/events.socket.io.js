@@ -62,5 +62,7 @@ function handleVpnAdd(res){
 		case 'load':
 			vues.load.vpnAdd(res);
 			break;
+		case 'add':
+			vues.handle.vpnAdd(res);
 	}
 }

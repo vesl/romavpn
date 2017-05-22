@@ -16,7 +16,7 @@ e.prototype.emit = function(o){
 };
 
 e.prototype.error = function(module,n,more) {	
-	var more = more || '';
+    more = more || '';
 	var date = new Date();
 	var message = this.more[module][n][1];
 	if (more instanceof Error) more = 'Javascript Error : '+more.message+' File : '+more.fileName+' Line : '+more.lineNumber;
