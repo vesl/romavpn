@@ -21,7 +21,7 @@ config.prototype.load = function(){
 				this.vpn_dns = config.vpn_dns;
 
 				Subnet = new subnet();
-				Subnet.load({_id:this.vpn_subnet}).then(()=>{
+				Subnet.load({_id:this.vpn_subnet}).then((found)=>{
 					this.vpn_network = Subnet.network;
 					this.vpn_netmask = Subnet.netmask;
 					res(config);

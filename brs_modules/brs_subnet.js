@@ -21,7 +21,7 @@ subnet.prototype.load = function(query){
 				this.netmask = found.netmask;
 				this.booked = JSON.parse(found.booked);
 				this.subnet = ip.subnet(this.network,this.netmask);
-				res(found);
+				res(this);
 			}).catch((error)=>{
 				ret.error;
 				rej(ret);

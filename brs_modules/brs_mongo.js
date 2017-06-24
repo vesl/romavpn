@@ -31,7 +31,23 @@ schemas.lxc = new mongoose.Schema({
     state : {
         type : Number,
         required : true,
+    },
+    parent : {
+    	type : String,
+    	required: true,
     }
+}, { toObject: { virtuals: true }, toJSON: { virtuals: true }});
+
+schemas.lxc.virtual('statePrintable').get(function(){
+	var ret;
+	switch(this.state){
+		case 0:
+			ret = 'Stopped';
+			break;
+		default:
+			ret = 'Unknown';
+	}
+	return ret;
 });
 
 schemas.vpn = new mongoose.Schema({
@@ -83,7 +99,7 @@ mongo.prototype.connect = function () {
 mongo.prototype.save = function(schema,values){
 	return new Promise((res,rej) => {
 		const model = this.db.model(schema,schemas[schema]);
-		model.create(values,(err,doc) => {
+		model.create(values,(err,doc) =>{
 			if(err) rej(err);
 			else if(doc) res(doc);
 			else rej(false);

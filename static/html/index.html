@@ -3,20 +3,37 @@
 	<head>
 		<meta charset="utf-8">
 		<title>RomaVPN</title>
+		
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<script type="text/javascript" src="/js/jQuery.min.js"></script>
 		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 		<script type="text/javascript" src="/js/vue.js"></script>
+		
 		<script type="text/javascript" src="/js/vues.js"></script>
+		<script type="text/javascript" src="/js/vues/config.js"></script>
+		<script type="text/javascript" src="/js/vues/loading.js"></script>
+		<script type="text/javascript" src="/js/vues/menu.js"></script>
+		<script type="text/javascript" src="/js/vues/vpn.js"></script>
+		<script type="text/javascript" src="/js/vues/vpnAdd.js"></script>
+		<script type="text/javascript" src="/js/vues/vpnList.js"></script>		
+		<script type="text/javascript" src="/js/vues/ovpn.js"></script>	
+		
 		<script type="text/javascript" src="/js/main.js"></script>
 		<script type="text/javascript" src="/js/alerts.js"></script>
-		<script type="text/javascript" src="/js/events.socket.io.js"></script>
+		<script type="text/javascript" src="/js/handleSocket.js"></script>
+		
 		<link rel="stylesheet" href="/css/normalize.css">
 		<link rel="stylesheet" href="/css/skeleton.css">
 		<link rel="stylesheet" href="/css/custom.css">
 		<link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
 	</head>
 	<body>
+		<div id="loading" class="loading" v-show="enable">
+			<div class="layout">
+				<h3><strong>{{ message }}</strong></h3>
+				<img src="/img/loading.gif">
+			</div>
+		</div>
 		<div class="container">
 			<div class="row">
 		   		<div class="six columns"><h1><strong>R</strong>omaVPN</h1></div>

@@ -34,6 +34,12 @@ app.get(/^\/css\/.*.css$/,function(req,res){
 	});
 });
 
+app.get(/^\/img\/.*/,function(req,res){
+	fs.readFile('static'+req.url, (err,data) => {
+		if(err) res.status(404).send('');
+		else if(data) res.status(200).send(data);
+	});
+});
 
 //SOCKET
 

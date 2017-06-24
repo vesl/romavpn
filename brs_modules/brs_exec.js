@@ -6,7 +6,7 @@ exports.exec = (cmd) => {
 		const process=exec(cmd, (error,stdout,stderr) => {
 			return new Promise( function(res,rej) {
 				if(error) rej(stderr);
-				else resolve(stdout);
+				else res(stdout);
 			}).then(function(stdout){res(stdout);
 			}).catch(function(stderr){rej(stderr);});
 		});

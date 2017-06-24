@@ -2,19 +2,43 @@ const mongo = require('./brs_mongo.js');
 const lxc = require('./brs_lxc');
 
 function vpn(){
+	this._id = false;
 	this.name = false;
 	this.subnets = false;
 	this.ovpn = false;
 	this.lxc = false;
 }
 
-vpn.prototype.load = function(which){
+vpn.prototype.load = function(){
+	if(this._id === false) return rej({idUnset:true});
 	return new Promise((res,rej)=>{
-		ret = {};
 		db = new mongo();
 		db.connect().then(()=>{
-			db.findAll('vpn',which).then((all)=>{
-				res(all);
+			db.findOne('vpn',{_id:this._id}).then((found)=>{
+				this.name = found.name;
+				Lxc = new lxc();
+				Lxc.parent = this.name;
+				Lxc.load().then((found)=>{
+					this.lxc = found;
+					res(this);
+				}).catch((error)=>rej({lxcNotLoaded:error}));
+			}).catch((notfound)=>rej({notExists:true}));
+		}).catch((error)=>{rej(error);});
+	});
+};
+
+vpn.prototype.loadLxc = function(){
+		
+};
+
+vpn.prototype.list = function(which){
+	return new Promise((res,rej)=>{
+		ret = {};
+		ret.vpns = [];
+		db = new mongo();
+		db.connect().then(()=>{
+			db.findAll('vpn',which).then((list)=>{
+				res(list);
 			}).catch((error)=>{
 				ret.error = error;
 				rej(ret);

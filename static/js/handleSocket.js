@@ -4,14 +4,15 @@ socket = io();
 alerts.initVue();
 
 //HOME
+vues.load.loading();
 vues.load.menu();
 
 socket.on('appReady',function(ready){
-	if(ready == false) {
+	if(ready === false) {
 		vues.menu.display = false;
 		vues.call.config();
 	} 
-	else vues.call.vpn({});
+	else vues.call.vpnList({});
 });
 
 //RESPONSE ROUTING
@@ -22,11 +23,14 @@ socket.on('res',function(res){
             case 'config':
 				handleConfig(res);
 				break;
-			case 'vpn':
-				handleVpn(res);
+			case 'vpnList':
+				handleVpnList(res);
 				break;
 			case 'vpnAdd':
 				handleVpnAdd(res);
+				break;
+			case 'vpn':
+				handleVpn(res);
 				break;
 		}
 	}
@@ -49,10 +53,10 @@ function handleConfig(res){
 	}
 }
 
-function handleVpn(res){
+function handleVpnList(res){
 	switch(res.action){
 		case 'load':
-			vues.load.vpn(res);
+			vues.load.vpnList(res);
 			break;
 	}
 }
@@ -64,5 +68,15 @@ function handleVpnAdd(res){
 			break;
 		case 'add':
 			vues.handle.vpnAdd(res);
+	}
+}
+
+function handleVpn(res){
+	if(res.Etarget) {
+		switch(res.Etarget){
+			case 'EDetails':
+				$('#vpnList').trigger(res.Etarget,res);
+				break;
+		}
 	}
 }

@@ -20,6 +20,7 @@ e.prototype.error = function(module,n,more) {
 	var date = new Date();
 	var message = this.more[module][n][1];
 	if (more instanceof Error) more = 'Javascript Error : '+more.message+' File : '+more.fileName+' Line : '+more.lineNumber;
+	else more = JSON.stringify(more);
 	var o = {
 		type : 'ERROR',
 		module : module,
@@ -70,6 +71,7 @@ e.prototype.more.vpn=[
 	[1,'Could not get VPNs from database'],
 	[2,'Could not load vpnAdd template'],
 	[3,'Could not save VPN'],
+	[4,'Cant find this VPN'],
 ];
 
 
