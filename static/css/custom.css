@@ -1,3 +1,6 @@
+a:hover{
+	cursor:pointer;
+}
 .alert {
 	border-radius: 4px;
 	margin-top:0.5em;
@@ -40,4 +43,10 @@
 	display:inline-block;
 	padding:0.2em;
 	margin:0.2em;
+}
+.control {
+	cursor:pointer;
+}
+.disabled {
+	opacity:0.5;
 }

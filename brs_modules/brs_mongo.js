@@ -81,6 +81,66 @@ schemas.config = new mongoose.Schema({
 	}
 });
 
+schemas.ovpn = new mongoose.Schema({
+	parent : {
+		type : String,
+		required : true,
+		unique : true
+	},
+	remote : {
+		type : String,
+		required : true,
+	},
+	port : {
+		type : String,
+		required : true,
+	},
+	proto : {
+		type : String,
+		required : true,
+	},
+	pull : {
+		type : Boolean,
+		required : true,
+	},
+	dev : {
+		type : String,
+		required : true,
+	},
+	ping : {
+		type : String,
+		required : true,
+	},
+	comp : {
+		type : Boolean,
+		required : true,
+	},
+	verb : {
+		type : String,
+		required : true,
+	},
+	mute : {
+		type : String,
+		required : true,
+	},
+	tls : {
+		type : Boolean,
+		required : true,
+	},
+	cacert : {
+		type : String,
+		required : true,
+	},
+	cert : {
+		type : String,
+		required : true,
+	},
+	key : {
+		type : String,
+		required : true,
+	}
+});
+
 function mongo() {
 	this.db=false;
 }
@@ -112,7 +172,7 @@ mongo.prototype.findOne = function(schema,query){
 		const model = this.db.model(schema,schemas[schema]);
 		model.findOne(query).exec((error,doc) => {
 			if(error) reject(error);
-			else if(doc) resolve(doc);
+			else if(doc || doc === null) resolve(doc);
 			else reject(false);
 		});
 	});

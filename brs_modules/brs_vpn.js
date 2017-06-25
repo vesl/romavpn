@@ -1,5 +1,6 @@
 const mongo = require('./brs_mongo.js');
 const lxc = require('./brs_lxc');
+const ovpn = require('./brs_ovpn.js');
 
 function vpn(){
 	this._id = false;
@@ -20,7 +21,14 @@ vpn.prototype.load = function(){
 				Lxc.parent = this.name;
 				Lxc.load().then((found)=>{
 					this.lxc = found;
-					res(this);
+					Ovpn = new ovpn();
+					Ovpn.parent = this.name;
+					Ovpn.load().then((found)=>{
+						if(found._id !== false) this.ovpn = found;
+						else this.ovpn = false;
+						res(this);
+					}).catch((error)=>{rej(error)});
+					
 				}).catch((error)=>rej({lxcNotLoaded:error}));
 			}).catch((notfound)=>rej({notExists:true}));
 		}).catch((error)=>{rej(error);});

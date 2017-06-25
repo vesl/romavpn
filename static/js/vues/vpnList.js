@@ -1,12 +1,10 @@
 vues.call.vpnList = function(which){
 	vues.loading.message = 'Loading vpns';
-	vues.loading.enable = true;
 	which = which || {};
 	socket.emit('req',{module:'vpnList',action:'load',which:which});
 };
 
 vues.load.vpnList = function(res){
-	vues.loading.enable=false;
 	main.cleanHTML();
 	main.insertHTML(res.html);
 	vues.vpnList = new Vue({
@@ -19,6 +17,10 @@ vues.load.vpnList = function(res){
 			callAddVpn : function(){
 				vues.call.vpnAdd();
 			},
+			callEditOvpn : function(parent){
+				console.log(parent);
+				vues.call.ovpn(parent);
+			}
 		}
 	});
 	vues.vpnList.vpns.forEach(function(vpn){

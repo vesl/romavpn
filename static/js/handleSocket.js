@@ -32,6 +32,9 @@ socket.on('res',function(res){
 			case 'vpn':
 				handleVpn(res);
 				break;
+			case 'ovpn':
+				handleOvpn(res);
+				break;
 		}
 	}
 });
@@ -78,5 +81,16 @@ function handleVpn(res){
 				$('#vpnList').trigger(res.Etarget,res);
 				break;
 		}
+	}
+}
+
+function handleOvpn(res){
+	switch(res.action) {
+		case 'load':
+			vues.load.ovpn(res);
+			break;
+		case 'update':
+			vues.handle.ovpn(res);
+			break;
 	}
 }

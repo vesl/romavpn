@@ -62,7 +62,7 @@ config.prototype.save = function(config){
 		this.vpn_dns = config.vpn_dns;
 		
 		check = this.check();
-		if(check != true) rej(check);
+		if(check !== true) rej(check);
 		else {
 			const subnet = require('./brs_subnet.js');
 			Subnet = new subnet();
@@ -81,7 +81,6 @@ config.prototype.save = function(config){
 					}).then((saved)=>{
 						res(saved);
 					}).catch((error)=>{
-						console.log(error);
 						ret.configNotSaved = true;
 						ret.error = error;
 						rej(ret);

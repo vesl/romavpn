@@ -8,11 +8,16 @@
 					<div class="attr"><strong>State</strong> {{ vpn.loaded.lxc.statePrintable }} </div>
 					<div class="attr"><strong>Ip</strong> {{ vpn.loaded.lxc.ip }} </div>
 					<div class="attr"><strong>Opvn configuration</strong>
-						<a href="#" v-if="vpn.loaded.ovpn">Edit</a>
-						<a href="#" v-else="vpn.loaded.ovpn">Create</a>
+						<a  @click="callEditOvpn(vpn.name)" v-if="vpn.loaded.ovpn">Edit</a>
+						<a  @click="callEditOvpn(vpn.name)" v-else="vpn.loaded.ovpn">Create</a>
 					</div>
-					<div class="attr"><strong>Subnets</strong>
-						<a href="#">Add</a>
+					<div class="attr" v-if="vpn.loaded.ovpn"><strong>Subnets</strong>
+						<a>Add</a>
+					</div>
+					<div class="control" v-if="vpn.loaded.ovpn">
+						<img src="img/start.png" v-bind:class="{disabled : vpn.loaded.lxc.state > 0}">
+						<img src="img/stop.png" v-bind:class="{disabled : vpn.loaded.lxc.state < 1}">
+						<img src="img/restart.png" v-bind:class="{disabled : vpn.loaded.lxc.state < 1}">
 					</div>
 				</div>
 				<img src="/img/loading-small.gif" v-else>

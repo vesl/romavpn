@@ -1,0 +1,17 @@
+<div id="ovpn">
+	<div class="alert error" v-if="errors.length > 0">
+		<li v-for="error in errors">{{ error }}</li>
+	</div>
+	<br>
+	<h5>OpenVPN configuration of <strong>{{ parent }}</strong></h5>
+	<p v-for="config in configs">
+		<label for="config.name">{{ config.title }}</label>
+		<textarea :name="config.name" v-model="config.value" v-if="config.type == 'text'"></textarea>
+		<input :name="config.name" type="checkbox" v-model="config.value" :placeholder="config.placeholder" v-else-if="config.type == 'checkbox'">
+		<input :name="config.name" type="text" v-model="config.value" :placeholder="config.placeholder" v-else>
+		<small>{{ config.description }}</small>	
+	</p>
+	<p>
+		<button class="button-primary" @click="update">Next</button>
+	</p>
+</div>

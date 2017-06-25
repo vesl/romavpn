@@ -3,7 +3,7 @@ vues.load.menu = function(){
 		el : '#menu',
 		data : {
 			display: true,
-			buttons : ['vpnList','ovpn','subnets','hosts','config']
+			buttons : ['vpnList','subnets','hosts','config']
 		},
 		methods : {
 			call : function(module){

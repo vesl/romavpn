@@ -74,14 +74,27 @@ e.prototype.more.vpn=[
 	[4,'Cant find this VPN'],
 ];
 
+e.prototype.more.ovpn=[
+	[0,'Could not load ovpn template'],
+	[1,'Configuration not created'],
+	[2,'Configuration not updated'],
+	[3,'Could not load ovpn'],
+];
+
 
 e.prototype.done = {};
 e.prototype.done.config=[
-	[0,'Configuration updated'],
+	[0,'Configuration added'],
 ];
 
 e.prototype.done.vpn = [
 	[0,'VPN added'],
 ];
+
+e.prototype.done.ovpn = [
+	[0,'OVPN configuration added'],
+	[1,'OVPN configuration updated'],
+];
+
 
 module.exports = e;

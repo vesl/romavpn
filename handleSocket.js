@@ -100,6 +100,18 @@ handleSocket.prototype.handleVpn = function(){
 	}
 };
 
+//1.3 OVPN handle
+handleSocket.prototype.handleOvpn = function(){
+	switch(this.req.action){
+		case 'load':
+			this.loadOvpn();
+			break;
+		case 'update':
+			this.updateOvpn();
+			break;
+	}	
+};
+
 //2 Modules actions calls
 
 //2.1 Config
@@ -195,6 +207,58 @@ handleSocket.prototype.addVpnAdd= function() {
 		this.e.error('vpn',3,error);
 		this.socket.emit('res',this.req);
 	});
+};
+
+//2.3 OVPN
+
+handleSocket.prototype.loadOvpn = function(){
+	this.loadTemplate('ovpn').then((html)=>{
+		this.req.html = html;
+		const ovpn = require('./brs_modules/brs_ovpn.js');
+		Ovpn = new ovpn();
+		Ovpn.parent = this.req.parent;
+		Ovpn.load().then((found)=>{
+			this.req.ovpn = found;
+			this.socket.emit('res',this.req);
+		}).catch((error)=>rej({ovpnNotFound:error}));
+	}).catch((error)=>{
+        this.req.error = error;
+        this.e.error('ovpn',0,error);
+        this.socket.emit('res',this.req);			
+	});
+};
+
+handleSocket.prototype.updateOvpn = function(){
+	 const ovpn = require('./brs_modules/brs_ovpn.js');
+	 Ovpn = new ovpn();
+	 Ovpn.parent = this.req.parent;
+	 if(this.req._id === false) {
+	 	Ovpn.save(this.req.config).then((saved)=>{
+	 		this.req.ovpn = saved;
+	 		this.e.info('ovpn',0);
+	 		this.socket.emit('res',saved);
+	 	}).catch((error)=>{
+	 		this.req.error = error;
+	 		this.e.error('ovpn',1,error);
+	 		this.socket.emit('res',this.req);
+	 	});
+	} else {
+		Ovpn.load().then(()=>{
+			Ovpn.update(this.req.config).then((updated)=>{
+				this.req.ovpn = updated;
+		 		this.e.info('ovpn',1);
+		 		this.socket.emit('res',updated);	
+			}).catch((error)=>{
+		 		this.req.error = error;
+		 		this.e.error('ovpn',2,error);
+		 		this.socket.emit('res',this.req);				
+			});
+		}).catch((error)=>{
+			this.req.error = error;
+		 	this.e.error('ovpn',2,error);
+		 	this.socket.emit('res',this.req);
+		});
+	}
 };
 
 module.exports = handleSocket;
