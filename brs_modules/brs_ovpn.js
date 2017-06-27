@@ -110,19 +110,47 @@ ovpn.prototype.update = function(config){
 	return new Promise((res,rej)=>{
 		query = {};
 		for(var key in config) {
-			if(this.hasOwnProperty(key) && config[key] != this[key]) query[key] = config[key];
+			if(this.hasOwnProperty(key) && config[key] != this[key]) {
+				query[key] = this[key] = config[key];
+			}
 		}
 		db = new mongo();
 		db.connect().then(()=>{
 			db.update('ovpn',query).then((updated)=>{
-				res(updated);
+				this.exportConfiguration().then(()=>{
+					res(updated);
+				}).catch((error)=>rej({confNotExport:error}));
 			}).catch((error)=>{rej({ovpnNotUpdated:error});});
 		}).catch((error)=>{rej(error);});
 	});	
 };
 
 ovpn.prototype.exportConfiguration = function(){
-	const fs = require('fs');
+	return new Promise((res,rej)=>{
+		const config = require('./brs_config.js');
+		Config = new config();
+		Config.load().then(()=>{
+			const fs = require('fs');
+			const path = Config.app_path+"romavpn/lxc_share/";
+			var content = "remote "+this.remote+"\nport "+this.port+"\nproto "+this.proto+"\ndev "+this.dev+"\nping "+this.ping+"\nverb "+this.verb+"\nmute "+this.mute+"\ncacert "+this.parent+"CA.crt\ncert "+this.parent+".crt\nkey "+this.parent+".key";
+			if(this.pull === true) content += "\npull";
+			if(this.tls === true) content += "\ntls-client";
+			if(this.comp === true ) content += "\ncomp-lzo";
+			fs.writeFile(path+this.parent+".ovpn",content,(error)=>{
+				if (error) return rej({cantWriteConf:error});
+			});
+			fs.writeFile(path+this.parent+"CA.crt",this.cacert,(error)=>{
+				if (error) return rej({cantWriteCacert:error});	
+			});
+			fs.writeFile(path+this.parent+".crt",this.cert,(error)=>{
+				if (error) return rej({cantWriteCert:error});	
+			});
+			fs.writeFile(path+this.parent+".key",this.key,(error)=>{
+				if (error) return rej({cantWriteKey:error});	
+			});
+			res(Config);
+		}).catch((error)=>rej({configPathNotLoad:error}));
+	});
 };
 
 module.exports = ovpn;
