@@ -28,7 +28,7 @@ lxc.prototype.add = function(){
                     	parent : this.parent,
                     	state : this.state,
                     }).then((saved)=>{
-                        this.id = saved._id;
+                        this._id = saved._id;
                         this.create().then(()=>{
             				res(this);
                         }).catch((error)=>{rej({lxcNotCreated:error});});
@@ -39,12 +39,25 @@ lxc.prototype.add = function(){
 	});
 };
 
+lxc.prototype.stateUpdate = function(value){
+	return new Promise((res,rej)=>{
+		this.state = value;
+		db = new mongo();
+		db.connect().then(()=>{
+			db.update('lxc',{state:this.state},{_id:this._id}).then(()=>{
+				res(true);
+			}).catch((error)=>{rej({stateNotUpdated:error})});
+		}).catch((error)=>{rej(error)});
+	});
+};
+
 lxc.prototype.load = function(){
 	return new Promise((res,rej)=>{
 		this.loadConfig().then(()=>{
 			db = new mongo();
 			db.connect().then(()=>{
 				db.findOne('lxc',{parent:this.parent}).then((found)=>{
+					this._id = found._id;
 					this.parent = found.parent;
 					this.state = found.state;
 					this.statePrintable = found.statePrintable;
@@ -93,12 +106,51 @@ lxc.prototype.loadIp = function(){
 lxc.prototype.create = function(){
 	return new Promise((res,rej)=>{
 		this.loadConfig().then(()=>{
-			command='/usr/bin/lxc-create -n '+this.parent+' -t romavpn -- --ip '+this.ip+' --netmask '+this.netmask+' --gateway '+this.gateway+' --dns '+this.dns+' --share '+this.share;
+			command='/usr/bin/lxc-create -n '+this.parent+' -t romavpn -- --ip '+this.ip+' --netmask '+this.netmask+' --gateway '+this.gateway+' --dns '+this.dns+' --sharepath '+this.share;
 			console.log(command);
 			exec(command).then((stdout)=>{
 				res(stdout);
 			}).catch((error)=>{rej({lxcNotCreated:error});});
 		}).catch((error)=>{rej({configNotLoaded:error});});
+	});
+};
+
+lxc.prototype.start = function(){
+	return new Promise((res,rej)=>{
+		command = '/usr/bin/lxc-start -d -n '+this.parent;
+		exec(command).then(()=>{
+			this.stateUpdate(2).then(()=>{
+				this.statePrintable = 'Started';
+				res(true);
+			}).catch((error)=>{rej({stateNotUpdated:error})});
+		}).catch((error)=>{rej({lxcNotStart:error});});
+	});
+};
+
+lxc.prototype.stop = function(){
+	return new Promise((res,rej)=>{
+		command = '/usr/bin/lxc-stop -n '+this.parent;
+		exec(command).then(()=>{
+			this.stateUpdate(1).then(()=>{
+				this.statePrintable = 'Stopped';
+				res(true);
+			}).catch((error)=>{rej({stateNotUpdated:error})});
+		}).catch((error)=>{rej({lxcNotStop:error});});
+	});
+};
+
+lxc.prototype.restart = function(){
+	return new Promise((res,rej)=>{
+		command = '/usr/bin/lxc-stop -n '+this.parent;
+		exec(command).then(()=>{
+				command = '/usr/bin/lxc-start -d -n '+this.parent;
+				exec(command).then(()=>{
+					this.stateUpdate(2).then(()=>{
+						this.statePrintable = 'Started';
+						res(true);
+					}).catch((error)=>{rej({stateNotUpdated:error})});
+			}).catch((error)=>{rej({lxcNotStart:error});});
+		}).catch((error)=>{rej({lxcNotStop:error});});
 	});
 };
 

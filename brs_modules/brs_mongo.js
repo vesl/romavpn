@@ -42,7 +42,13 @@ schemas.lxc.virtual('statePrintable').get(function(){
 	var ret;
 	switch(this.state){
 		case 0:
+			ret = 'Need configuration';
+			break;
+		case 1:
 			ret = 'Stopped';
+			break;
+		case 2:
+			ret = 'Started';
 			break;
 		default:
 			ret = 'Unknown';

@@ -15,9 +15,9 @@
 						<a>Add</a>
 					</div>
 					<div class="control" v-if="vpn.loaded.ovpn">
-						<img src="img/start.png" v-bind:class="{disabled : vpn.loaded.lxc.state > 0}">
-						<img src="img/stop.png" v-bind:class="{disabled : vpn.loaded.lxc.state < 1}">
-						<img src="img/restart.png" v-bind:class="{disabled : vpn.loaded.lxc.state < 1}">
+						<img src="img/start.png" @click="controlVpn(vpn._id,'start')" v-bind:class="{disabled : vpn.loaded.lxc.state != 1}">
+						<img src="img/stop.png" @click="controlVpn(vpn._id,'stop')" v-bind:class="{disabled : vpn.loaded.lxc.state < 2}">
+						<img src="img/restart.png" @click="controlVpn(vpn._id,'restart')" v-bind:class="{disabled : vpn.loaded.lxc.state < 2}">
 					</div>
 				</div>
 				<img src="/img/loading-small.gif" v-else>

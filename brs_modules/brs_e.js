@@ -72,6 +72,9 @@ e.prototype.more.vpn=[
 	[2,'Could not load vpnAdd template'],
 	[3,'Could not save VPN'],
 	[4,'Cant find this VPN'],
+	[5,'Cant start this VPN'],
+	[6,'Cant stop this VPN'],
+	[7,'Cant restart this VPN'],
 ];
 
 e.prototype.more.ovpn=[
@@ -89,6 +92,9 @@ e.prototype.done.config=[
 
 e.prototype.done.vpn = [
 	[0,'VPN added'],
+	[1,'VPN started'],
+	[2,'VPN stopped'],
+	[3,'VPN restarted'],
 ];
 
 e.prototype.done.ovpn = [

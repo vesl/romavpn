@@ -45,6 +45,13 @@ vues.load.config = function(res) {
 					placeholder:'8.8.8.8',
 					description:'DNS to resolve remote VPN servers names',
 					value: res.config.vpn_dns
+				},
+				bridge_ip : {
+					title:'Bridge IP',
+					name:'bridge_ip',
+					placeholder:'10.1.0.254',
+					description:'DNS to resolve remote VPN servers names',
+					value: res.config.vpn_dns
 				}
 			}
 		},

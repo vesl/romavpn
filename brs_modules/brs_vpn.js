@@ -28,15 +28,10 @@ vpn.prototype.load = function(){
 						else this.ovpn = false;
 						res(this);
 					}).catch((error)=>{rej(error)});
-					
 				}).catch((error)=>rej({lxcNotLoaded:error}));
 			}).catch((notfound)=>rej({notExists:true}));
 		}).catch((error)=>{rej(error);});
 	});
-};
-
-vpn.prototype.loadLxc = function(){
-		
 };
 
 vpn.prototype.list = function(which){
@@ -59,11 +54,10 @@ vpn.prototype.checkAdd = function(){
 	return new Promise((res,rej)=>{
 		db = new mongo();
 		db.connect().then(()=>{
-			db.findOne('vpn',{name:this.name}).then(()=>{
-				rej({alreadyExists:true});
-			}).catch((notexists)=>{
-				res(true);	
-			});
+			db.findOne('vpn',{name:this.name}).then((found)=>{
+				if(found._id !== false) rej({alreadyExists:true});
+				else res(true);
+			}).catch((notexists)=>{res(true);});
 		}).catch((error)=>{rej(error);});
 	});
 };

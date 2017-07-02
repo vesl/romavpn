@@ -35,6 +35,9 @@ socket.on('res',function(res){
 			case 'ovpn':
 				handleOvpn(res);
 				break;
+			case 'vpnControl':
+				handleVpn(res);
+				break;
 		}
 	}
 });
@@ -78,6 +81,9 @@ function handleVpn(res){
 	if(res.Etarget) {
 		switch(res.Etarget){
 			case 'EDetails':
+				$('#vpnList').trigger(res.Etarget,res);
+				break;
+			case 'EControl':
 				$('#vpnList').trigger(res.Etarget,res);
 				break;
 		}

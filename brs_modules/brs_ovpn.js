@@ -43,6 +43,17 @@ ovpn.prototype.load = function(){
 	});
 };
 
+ovpn.prototype.loadBroLxc = function(){
+	return new Promise((res,rej)=>{
+		const lxc = require('./brs_lxc.js');
+		Lxc = new lxc();
+		Lxc.parent = this.parent;
+		Lxc.load().then((found)=>{
+			res(found);
+		}).catch((error)=>{rej(error)});
+	});
+};
+
 ovpn.prototype.check = function(){
 	ret = {};
 	if(this.remote === '')	ret.remote = true;
@@ -63,7 +74,7 @@ ovpn.prototype.save = function(config){
 	return new Promise((res,rej)=>{
 		
 		this.remote = config.remote;
-		this.port = config.remote;
+		this.port = config.port;
 		this.proto = config.proto;
 		this.dev = config.dev;
 		this.ping = config.ping;
@@ -97,10 +108,14 @@ ovpn.prototype.save = function(config){
 					tls: this.tls,
 					comp: this.comp
 				}).then((saved)=>{
-					res(saved);
-				}).catch((error)=>{
-					rej({ovpnNotSaved:error})
-				});
+					this.exportConfiguration().then(()=>{
+						this.loadBroLxc().then((broLxc)=>{
+							broLxc.stateUpdate(1).then(()=>{
+								res(saved);
+							}).catch((error)=>{rej({broLxcStateNotUpdated:error})});
+						}).catch((error)=>{rej({broLxcrNotLoaded:error})});
+					}).catch((error)=>rej({confNotExport:error}));
+				}).catch((error)=>{rej({ovpnNotSaved:error})});
 			}).catch((error)=>{rej(error);});
 		}
 	});
@@ -116,9 +131,13 @@ ovpn.prototype.update = function(config){
 		}
 		db = new mongo();
 		db.connect().then(()=>{
-			db.update('ovpn',query).then((updated)=>{
+			db.update('ovpn',query,{parent:this.parent}).then((updated)=>{
 				this.exportConfiguration().then(()=>{
-					res(updated);
+					this.loadBroLxc().then((broLxc)=>{
+						broLxc.stateUpdate(1).then(()=>{
+							res(updated);
+						}).catch((error)=>{rej({broLxcStateNotUpdated:error})});
+					}).catch((error)=>{rej({broLxcrNotLoaded:error})});
 				}).catch((error)=>rej({confNotExport:error}));
 			}).catch((error)=>{rej({ovpnNotUpdated:error});});
 		}).catch((error)=>{rej(error);});
@@ -131,24 +150,33 @@ ovpn.prototype.exportConfiguration = function(){
 		Config = new config();
 		Config.load().then(()=>{
 			const fs = require('fs');
-			const path = Config.app_path+"romavpn/lxc_share/";
-			var content = "remote "+this.remote+"\nport "+this.port+"\nproto "+this.proto+"\ndev "+this.dev+"\nping "+this.ping+"\nverb "+this.verb+"\nmute "+this.mute+"\ncacert "+this.parent+"CA.crt\ncert "+this.parent+".crt\nkey "+this.parent+".key";
+			const exec = require('./brs_exec.js').exec;
+			const path = Config.app_path+"/lxc_share/";
+			var content = "remote "+this.remote+"\nport "+this.port+"\nproto "+this.proto+"\ndev "+this.dev+"\nping "+this.ping+"\nverb "+this.verb+"\nmute "+this.mute+"\nca /share/"+this.parent+"CA.crt\ncert /share/"+this.parent+".crt\nkey /share/"+this.parent+".key\nscript-security 2\nup /share/"+this.parent+"UP.sh";
 			if(this.pull === true) content += "\npull";
 			if(this.tls === true) content += "\ntls-client";
-			if(this.comp === true ) content += "\ncomp-lzo";
+			if(this.comp === true) content += "\ncomp-lzo";
 			fs.writeFile(path+this.parent+".ovpn",content,(error)=>{
 				if (error) return rej({cantWriteConf:error});
 			});
 			fs.writeFile(path+this.parent+"CA.crt",this.cacert,(error)=>{
-				if (error) return rej({cantWriteCacert:error});	
+				if (error) return rej({cantWriteCacert:error});
 			});
 			fs.writeFile(path+this.parent+".crt",this.cert,(error)=>{
-				if (error) return rej({cantWriteCert:error});	
+				if (error) return rej({cantWriteCert:error});
 			});
 			fs.writeFile(path+this.parent+".key",this.key,(error)=>{
-				if (error) return rej({cantWriteKey:error});	
+				if (error) return rej({cantWriteKey:error});
 			});
-			res(Config);
+			fs.writeFile(path+this.parent+"UP.sh",'#!/bin/bash\n',(error)=>{
+				if (error) return rej({cantWriteUpScript:error});
+			});
+			fs.writeFile(path+this.parent+".sh","#!/bin/bash\nmkdir /dev/net\nmknod /dev/net/tun c 10 200\nchmod 666 /dev/net/tun\n/usr/sbin/openvpn --config /share/"+this.parent+".ovpn &\n\n",(error)=>{
+				if (error) return rej({cantWriteRcLocalScript:error});	
+			});
+			exec('/bin/chmod +x '+path+this.parent+"UP.sh "+path+this.parent+".sh").then((done)=>{
+				res(true);
+			}).catch((error)=>{rej({chmodFailedUPScript:error})});
 		}).catch((error)=>rej({configPathNotLoad:error}));
 	});
 };
