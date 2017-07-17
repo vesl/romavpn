@@ -36,16 +36,11 @@ vpn.prototype.load = function(){
 
 vpn.prototype.list = function(which){
 	return new Promise((res,rej)=>{
-		ret = {};
-		ret.vpns = [];
 		db = new mongo();
 		db.connect().then(()=>{
 			db.findAll('vpn',which).then((list)=>{
 				res(list);
-			}).catch((error)=>{
-				ret.error = error;
-				rej(ret);
-			});
+			}).catch((error)=>{rej({cantListVpn:error})});
 		}).catch((error)=>{rej(error);});
 	});
 };
@@ -62,7 +57,7 @@ vpn.prototype.checkAdd = function(){
 	});
 };
 
-vpn.prototype.add = function(){
+vpn.prototype.save = function(){
 	return new Promise((res,rej)=>{
 		ret = {};
 		this.checkAdd().then(()=>{
@@ -85,7 +80,7 @@ vpn.prototype.addLxc = function(){
 		ret = {};
 		Lxc = new lxc();
 		Lxc.parent = this.name;
-		Lxc.add().then(()=>{
+		Lxc.save().then(()=>{
 			this.lxc = Lxc.id;
 			res();
 		}).catch((error)=>{rej(error);});

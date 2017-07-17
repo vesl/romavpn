@@ -4,7 +4,7 @@ function handleSocket(req,socket,config) {
 	this.req = req;
 	this.socket = socket;
 	this.config = config;
-	this.allowedModules = ['config','vpn','vpnAdd','vpnList','ovpn','vpnControl'];
+	this.allowedModules = ['config','vpn','vpnAdd','vpnList','ovpn','vpnControl','subnetList','subnetAdd'];
 	this.allowedActions = ['load','update','add','list','start','stop','restart'];
 	this.e = new e(socket);
 }
@@ -55,6 +55,12 @@ handleSocket.prototype.process = function(){
 			break;
 		case 'vpnControl':
 			this.handleVpnControl();
+			break;
+		case 'subnetList':
+			this.handleSubnetList();
+			break;
+		case 'subnetAdd':
+			this.handleSubnetAdd();
 			break;
 	} 
 };
@@ -129,6 +135,25 @@ handleSocket.prototype.handleOvpn = function(){
 	}	
 };
 
+//1.4 Subnet handle
+handleSocket.prototype.handleSubnetList = function(){
+	switch(this.req.action){
+		case 'load':
+			this.loadSubnetList();
+			break;
+	}	
+};
+handleSocket.prototype.handleSubnetAdd = function(){
+	switch(this.req.action){
+		case 'load':
+			this.loadSubnetAdd();
+			break;
+		case 'add':
+			this.addSubnetAdd();
+			break;
+	}	
+};
+
 //2 Modules actions calls
 
 //2.1 Config
@@ -145,19 +170,26 @@ handleSocket.prototype.loadConfig = function(){
 };
 
 handleSocket.prototype.updateConfig = function(){
-    if(!this.req.config._id) {
+    if(this.req._id === false) {
         this.config.save(this.req.config).then((saved)=>{
-            this.req.success = true;
             this.req.config = saved;
             this.e.info('config',0);
             this.socket.emit('res',this.req);
         }).catch((error)=>{
-            this.req.error = error;
-            this.e.error('config',1,error);
-            this.socket.emit('res',this.req);
+			this.req.error = error;
+			this.e.error('config',1,error);
+			this.socket.emit('res',this.req);
         });
     } else {
-        //Edit existing
+		this.config.update(this.req.config).then((updated)=>{
+			this.req.config = updated;
+			this.e.info('config',1);
+			this.socket.emit('res',this.req);
+		}).catch((error)=>{
+			this.req.error = error;
+			this.e.error('config',2);
+			this.socket.emit('res',this.req)
+		});
     }
 };
 
@@ -215,7 +247,7 @@ handleSocket.prototype.addVpnAdd= function() {
 	const vpn = require('./brs_modules/brs_vpn.js');
 	Vpn = new vpn();
 	Vpn.name = this.req.vpn_name;
-	Vpn.add().then((saved)=>{
+	Vpn.save().then((saved)=>{
 		this.req.success = true;
 		this.req.vpn = saved;
 		this.e.info('vpn',0);
@@ -348,6 +380,58 @@ handleSocket.prototype.updateOvpn = function(){
 			});
 	 	}
 	}).catch((error)=>{ovpnConfNotSaved:error});
+};
+
+//2.4 subnet
+handleSocket.prototype.loadSubnetList = function(){
+	this.loadTemplate('subnetList').then((html)=>{
+		this.req.html = html;	
+		const subnet = require('./brs_modules/brs_subnet.js');
+		var Subnet = new subnet();
+		Subnet.list({parent:this.req.parent}).then((list)=>{
+			this.req.subnets = list;
+			this.socket.emit('res',this.req);
+		}).catch((error)=>{
+			this.req.error = error;
+			this.e.error('subnet',0,error);
+			this.socket.emit('res',this.req);
+		});
+	}).catch((error)=>{
+		this.req.error = error;
+		this.e.error('subnet',1,error);
+		this.socket.emit('res',this.req);
+	});
+};
+
+handleSocket.prototype.loadSubnetAdd = function(){
+	this.loadTemplate('subnetAdd').then((html)=>{
+		this.req.html = html;
+		this.socket.emit('res',this.req);
+	}).catch((error)=>{
+		this.req.error = error;
+		this.e.error('subnet',2,error);
+		this.socket.emit('res',this.req);
+	});
+};
+
+handleSocket.prototype.addSubnetAdd= function() {
+	const subnet = require('./brs_modules/brs_subnet.js');
+	Subnet = new subnet();
+	Subnet.parent = this.req.parent;
+	Subnet.name = this.req.subnet_name;
+	Subnet.network = this.req.subnet_network;
+	Subnet.netmask = this.req.subnet_netmask;
+	Subnet.netmap = this.req.subnet_netmap;
+	Subnet.save().then((saved)=>{
+		this.req.success = true;
+		this.req.subnet = saved;
+		this.e.info('subnet',0);
+		this.socket.emit('res',this.req);
+	}).catch((error)=>{
+		this.req.error = error;
+		this.e.error('subnet',3,error);
+		this.socket.emit('res',this.req);
+	});
 };
 
 module.exports = handleSocket;

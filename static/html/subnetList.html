@@ -1,0 +1,13 @@
+<div id="subnetList">
+	<p><strong>{{parent}}</strong>'s subnets</p>
+	<button class="button" @click="callAddSubnet(parent)">add a Subnet</button>
+	<div v-if="subnets.length > 0">
+		<div class="row-grey container" v-for="(subnet,index) in subnets">
+			<h4 class="three columns" v-bind:id=subnet._id>{{subnet.name}}</h4>
+			<div class="nine columns">
+				<img src="/img/loading-small.gif" v-else>
+			</div>
+		</div>
+	</div>
+	<div v-else>{{ nosubnet }}</div>
+</div>

@@ -171,7 +171,7 @@ ovpn.prototype.exportConfiguration = function(){
 			fs.writeFile(path+this.parent+"UP.sh",'#!/bin/bash\n',(error)=>{
 				if (error) return rej({cantWriteUpScript:error});
 			});
-			fs.writeFile(path+this.parent+".sh","#!/bin/bash\nmkdir /dev/net\nmknod /dev/net/tun c 10 200\nchmod 666 /dev/net/tun\n/usr/sbin/openvpn --config /share/"+this.parent+".ovpn &\n\n",(error)=>{
+			fs.writeFile(path+this.parent+".sh","#!/bin/bash\nmkdir /dev/net\nmknod /dev/net/tun c 10 200\nchmod 666 /dev/net/tun\n/usr/sbin/openvpn --config /share/"+this.parent+".ovpn > /var/log/opvn.log &\n\n",(error)=>{
 				if (error) return rej({cantWriteRcLocalScript:error});	
 			});
 			exec('/bin/chmod +x '+path+this.parent+"UP.sh "+path+this.parent+".sh").then((done)=>{

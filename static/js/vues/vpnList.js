@@ -21,6 +21,9 @@ vues.load.vpnList = function(res){
 			},
 			controlVpn : function(id,action){
 				vues.call.vpnControl(id,action);
+			},
+			callSubnetList : function(parent){
+				vues.call.subnetList(parent);
 			}
 		}
 	});

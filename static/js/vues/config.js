@@ -46,29 +46,24 @@ vues.load.config = function(res) {
 					description:'DNS to resolve remote VPN servers names',
 					value: res.config.vpn_dns
 				},
-				bridge_ip : {
-					title:'Bridge IP',
-					name:'bridge_ip',
-					placeholder:'10.1.0.254',
-					description:'DNS to resolve remote VPN servers names',
-					value: res.config.vpn_dns
-				}
 			}
 		},
 		methods : {
 			update : function(){
-				this.errors = [];
-				socket.emit('req',{
+				req = {
 					module:'config',
 					action:'update',
-					config:{
+					_id:res.config._id,
+					config: {
 						app_path:this.configs.app_path.value,
 						vpn_network:this.configs.vpn_network.value,
 						vpn_netmask:this.configs.vpn_netmask.value,
 						vpn_gateway:this.configs.vpn_gateway.value,
 						vpn_dns:this.configs.vpn_dns.value,
 					}
-				});
+				};
+				this.errors = [];
+				socket.emit('req',req);
 			}
 		}
 	});
@@ -84,7 +79,7 @@ vues.handle.config = function(res){
 		if(res.error.invalidSubnet) vues.config.errors.push('Couple network / netmask is a wrong subnet');
 		if(res.error.subnetNotSaved) vues.config.errors.push('Database error subnet not saved');
 		if(res.error.configNotSaved) vues.config.errors.push('Database error config not saved');
-	} else if(res.success){
+	} else {
 		vues.menu.display = true;
         vues.call.vpnList({});
     }

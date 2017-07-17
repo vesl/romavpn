@@ -14,7 +14,7 @@ function lxc(){
     this.statePrintable = false;
 }
 
-lxc.prototype.add = function(){
+lxc.prototype.save = function(){
 	return new Promise((res,rej)=>{
 		ret = {};
 		Subnet = new subnet();

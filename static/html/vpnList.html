@@ -11,8 +11,7 @@
 						<a  @click="callEditOvpn(vpn.name)" v-if="vpn.loaded.ovpn">Edit</a>
 						<a  @click="callEditOvpn(vpn.name)" v-else="vpn.loaded.ovpn">Create</a>
 					</div>
-					<div class="attr" v-if="vpn.loaded.ovpn"><strong>Subnets</strong>
-						<a>Add</a>
+					<div class="attr" v-if="vpn.loaded.ovpn"><strong>Subnets</strong><a @click="callSubnetList(vpn.name)"> List</a>
 					</div>
 					<div class="control" v-if="vpn.loaded.ovpn">
 						<img src="img/start.png" @click="controlVpn(vpn._id,'start')" v-bind:class="{disabled : vpn.loaded.lxc.state != 1}">

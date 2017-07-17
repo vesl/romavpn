@@ -64,6 +64,7 @@ e.prototype.more.mongo=[
 e.prototype.more.config=[
     [0,'Could not load config template'],
 	[1,'Configuration not created'],
+	[2,'Configuration not updated'],
 ];
 
 e.prototype.more.vpn=[
@@ -84,10 +85,17 @@ e.prototype.more.ovpn=[
 	[3,'Could not load ovpn'],
 ];
 
+e.prototype.more.subnet=[
+	[0,'Cant list subnets'],
+	[1,'Cant load subnetList template'],
+	[2,'Cant load subnetAdd template'],
+	[3,'Cant add subnet'],
+];
 
 e.prototype.done = {};
 e.prototype.done.config=[
 	[0,'Configuration added'],
+	[1,'Configuration updated'],
 ];
 
 e.prototype.done.vpn = [
@@ -100,6 +108,10 @@ e.prototype.done.vpn = [
 e.prototype.done.ovpn = [
 	[0,'OVPN configuration added'],
 	[1,'OVPN configuration updated'],
+];
+
+e.prototype.done.subnet = [
+	[0,'SUBNET added'],
 ];
 
 

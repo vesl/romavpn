@@ -2,6 +2,7 @@ const mongo = require('./brs_mongo.js');
 const subnet = require('./brs_subnet.js');
 
 function config () {
+	this._id = false;
 	this.app_path = '';
 	this.vpn_subnet = '';
 	this.vpn_gateway = '';
@@ -14,17 +15,16 @@ config.prototype.load = function(){
 		db = new mongo();
 		db.connect().then(()=>{
 			db.findOne('config',{}).then((config)=>{
-
+				this._id = config._id;
 				this.app_path = config.app_path;
 				this.vpn_subnet = config.vpn_subnet;
 				this.vpn_gateway = config.vpn_gateway;
 				this.vpn_dns = config.vpn_dns;
-
 				Subnet = new subnet();
 				Subnet.load({_id:this.vpn_subnet}).then((found)=>{
 					this.vpn_network = Subnet.network;
 					this.vpn_netmask = Subnet.netmask;
-					res(config);
+					res(this);
 				}).catch((error)=>{
 					ret.subnetNotFound = true;
 					ret.error = error;
@@ -67,6 +67,7 @@ config.prototype.save = function(config){
 			const subnet = require('./brs_subnet.js');
 			Subnet = new subnet();
 			Subnet.name = 'default_lxc_subnet';
+			Subnet.parent = Subnet.name;
 			Subnet.network = this.vpn_network;
 			Subnet.netmask = this.vpn_netmask;
 			Subnet.save().then((saved)=>{
@@ -77,7 +78,7 @@ config.prototype.save = function(config){
 						app_path : this.app_path,
 						vpn_subnet : this.vpn_subnet,
 						vpn_gateway : this.vpn_gateway,
-						vpn_dns : this.vpn_dns
+						vpn_dns : this.vpn_dns,
 					}).then((saved)=>{
 						res(saved);
 					}).catch((error)=>{
@@ -90,5 +91,22 @@ config.prototype.save = function(config){
 		}
 	});
 };
+
+config.prototype.update = function(config){
+	return new Promise((res,rej)=>{
+		query = {};
+		for(var key in config) {
+			if(this.hasOwnProperty(key) && config[key] != this[key]) {
+				query[key] = this[key] = config[key];
+			}
+		}
+		db = new mongo();
+		db.connect().then(()=>{
+			db.update('config',query,{}).then((updated)=>{
+				res(updated);
+			}).catch((error)=>{rej({configNotUpdated:error})});
+		}).catch((error)=>{rej(error)});
+	});
+}
 
 module.exports=config;

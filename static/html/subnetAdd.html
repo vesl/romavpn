@@ -1,0 +1,24 @@
+<div id="subnetAdd">
+	<div class="alert error" v-if="errors.length > 0">
+		<li v-for="error in errors">{{ error }}</li>
+	</div>
+	<br>
+	<p>
+		Add a subnet on <strong>{{ parent }}</strong>
+	</p>
+	<p>
+		<label for="name">Name</label>
+		<input type="text" name="name" placeholder="name" v-model="subnet_name">
+		<label for="network">Network</label>
+		<input type="text" name="network" placeholder="10.40.1.0" v-model="subnet_network">
+		<label for="netmask">Netmask</label>
+		<input type="text" name="netmask" placeholder="255.255.255.0" v-model="subnet_netmask">
+		<label for="isNetmap">Netmap</label>
+		<input type="checkbox" name="isNetmap" value="{{isNetmap}}" v-model="isNetmap">
+		<p v-if="isNetmap">
+			<label for="netmap">To virtual network</label>
+			<input type="text" name="netmap" v-model="subnet_netmap" placeholder="10.140.0.0">
+		</p>
+	</p>
+	<button @click="add" class="button-primary">add</button>
+</div>

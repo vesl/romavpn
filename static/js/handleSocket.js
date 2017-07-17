@@ -38,6 +38,12 @@ socket.on('res',function(res){
 			case 'vpnControl':
 				handleVpn(res);
 				break;
+			case 'subnetList':
+				handleSubnetList(res);
+				break;
+			case 'subnetAdd':
+				handleSubnetAdd(res);
+				break;
 		}
 	}
 });
@@ -97,6 +103,25 @@ function handleOvpn(res){
 			break;
 		case 'update':
 			vues.handle.ovpn(res);
+			break;
+	}
+}
+
+function handleSubnetList(res){
+	switch(res.action){
+		case 'load':
+			vues.load.subnetList(res);
+			break;
+	}
+}
+
+function handleSubnetAdd(res){
+	switch(res.action){
+		case 'load':
+			vues.load.subnetAdd(res);
+			break;
+		case 'add':
+			vues.handle.subnetAdd(res);
 			break;
 	}
 }

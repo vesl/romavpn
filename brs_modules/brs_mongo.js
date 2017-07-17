@@ -5,23 +5,24 @@ schemas.subnet = new mongoose.Schema({
 	name : {
 		type : String,
 		required : true,
-		unique : true
+		unique : true,
 	},
 	network: {
 		type : String,
 		required : true,
-		unique : true
+	},
+	parent : {
+		type : String,
+		required : true,
 	},
   	netmask: {
   		type : String,
-  		required : true
+  		required : true,
   	},
-    gateway: {
-        type : String,
-    },
-    dns : {
-        type : String,
-    },
+  	netmap : {
+  		type : String,
+  		unique : true,
+  	},
   	booked: {
   		type : String,
   	}
@@ -84,7 +85,7 @@ schemas.config = new mongoose.Schema({
 		type : String,
 		required : true,
 		unique : true,
-	}
+	},
 });
 
 schemas.ovpn = new mongoose.Schema({

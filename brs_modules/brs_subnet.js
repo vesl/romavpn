@@ -6,6 +6,8 @@ function subnet(){
 	this.name = false;
 	this.network = false;
 	this.netmask = false;
+	this.netmap = false;
+	this.parent = false;
 	this.booked = '{}';
 }
 
@@ -17,8 +19,10 @@ subnet.prototype.load = function(query){
 			db.findOne('subnet',query).then((found)=>{
 				this.id = found._id;
 				this.name = found.name;
+				this.parent = found.parent;
 				this.network = found.network;
 				this.netmask = found.netmask;
+				this.netmap = found.netmap;
 				this.booked = JSON.parse(found.booked);
 				this.subnet = ip.subnet(this.network,this.netmask);
 				res(this);
@@ -33,20 +37,25 @@ subnet.prototype.load = function(query){
 	});
 };
 
+subnet.prototype.list = function(which){
+	return new Promise((res,rej)=>{
+		db = new mongo();
+		db.connect().then(()=>{
+			db.findAll('subnet',which).then((list)=>{
+				res(list);
+			}).catch((error)=>{cantListSubnet:error})
+		}).catch((error)=>{rej(error)});
+	});
+};
+
 subnet.prototype.save = function() {
 	return new Promise((res,rej)=>{
 		ret = {};
-		if(!this.name) {
-			ret.nameEmpty=true;
-			rej(ret);
-		}
+		if(!this.name) return rej({nameEmpty:true});
 		try {
 			this.subnet = ip.subnet(this.network,this.netmask);
 			this.booked = JSON.stringify({broadcast:this.subnet.broadcastAddress});
-		} catch(error){
-			ret.invalidSubnet=true;
-			rej(ret);
-		}
+		} catch(error){rej({invalidSubnet:true});}
 		if(!ret.invalidSubnet){
 			db = new mongo();
 			db.connect().then(()=>{
@@ -56,13 +65,11 @@ subnet.prototype.save = function() {
 					netmask : this.netmask,
 					booked : this.booked,
 					subnet : this.subnet,
+					netmap : this.netmap,
+					parent : this.parent,
 				}).then((saved)=>{
 					res(saved);
-				}).catch((error)=>{
-					ret.subnetNotSaved=true;
-					ret.error = error;
-					rej(ret);
-				});
+				}).catch((error)=>{rej({subnetNotSaved:true})});
 			}).catch((error)=>{rej(error);});
 		}
 	});
@@ -109,29 +116,18 @@ subnet.prototype.book = function(host,book){
     					res(this.booked[host]);
                 }).catch((error)=>{rej(error);});
             }
-            else {
-            	ret.subnetFull = true;
-            	rej(ret);
-            }
+            else rej({subnetFull:true});
         } else {
             try {
                 this.subnet.contains(book);
                 for(host in this.booked) {
-                    if(book == this.booked[host]){
-                        ret.ipAlreadyBooked = true;
-                        ret.host = host;
-                        return rej(ret);
-                    }
+                    if(book == this.booked[host]) return rej({ipAlreadyBooked:true});
                 }
                 this.booked[host] = book;
                 this.update({booked : JSON.stringify(this.booked)}).then(()=>{
                     return res(book);
                 }).catch((error)=>{rej(error);});
-            } catch(error) {
-                ret.invalidIp = true;
-                ret.error = book;
-                rej(ret);
-            }
+            } catch(error) {rej({invalidIp:true});}
         }
 	});
 }
