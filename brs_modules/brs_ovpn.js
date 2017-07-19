@@ -169,7 +169,7 @@ ovpn.prototype.exportConfiguration = function(){
 				if (error) return rej({cantWriteKey:error});
 			});
 			if (!fs.existsSync(path+this.parent+"UP.sh")) {
-				fs.writeFile(path+this.parent+"UP.sh",'#!/bin/bash\n',(error)=>{
+				fs.writeFile(path+this.parent+"UP.sh",'#!/bin/bash\n/sbin/iptables -t nat -I POSTROUTING -o tap0 -j MASQUERADE',(error)=>{
 					if (error) return rej({cantWriteUpScript:error});
 				});
 			}

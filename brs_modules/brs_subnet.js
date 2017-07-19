@@ -123,6 +123,7 @@ subnet.prototype.book = function(host,book){
 		if(!book){
             current = ip.toLong(this.network)+1;
             while(this.subnet.contains(ip.fromLong(current))){
+		free = true;
                 for(book in this.booked){
                     if(ip.fromLong(current) == this.booked[book]) {
                         free = false;
@@ -143,6 +144,7 @@ subnet.prototype.book = function(host,book){
             else rej({subnetFull:true});
         } else {
 			this.contains(book).then((ok)=>{
+				free=true;
 				for(hostBook in this.booked) {
 					if(book == this.booked[hostBook]) {
 						free = false;

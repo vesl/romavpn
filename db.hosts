@@ -1,2 +1,4 @@
 shipokomon	IN	A	10.140.0.243
 oklm		IN	A	10.1.0.1
+oenetpdc	IN	A	169.254.0.4
+oenetpfp	IN	A	169.254.1.4
