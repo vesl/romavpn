@@ -21,7 +21,6 @@ schemas.subnet = new mongoose.Schema({
   	},
   	netmap : {
   		type : String,
-  		unique : true,
   	},
   	booked: {
   		type : String,
@@ -147,6 +146,25 @@ schemas.ovpn = new mongoose.Schema({
 		required : true,
 	}
 });
+
+schemas.host = new mongoose.Schema({
+	parent : {
+		type: String,
+		required : true,
+	},
+	name : {
+		type : String,
+		required : true,
+		unique : true,
+	},
+	ip : {
+		type : String,
+		required : true,
+		unique : true,
+	}
+	
+});
+
 
 function mongo() {
 	this.db=false;

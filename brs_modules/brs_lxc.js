@@ -121,7 +121,11 @@ lxc.prototype.start = function(){
 		exec(command).then(()=>{
 			this.stateUpdate(2).then(()=>{
 				this.statePrintable = 'Started';
-				res(true);
+				const subnet = require('./brs_subnet');
+				Subnet = new subnet();
+				Subnet.route({parent:this.parent},this.ip,'add').then(()=>{
+					res(true);
+				}).catch((error)=>{rej(error)});
 			}).catch((error)=>{rej({stateNotUpdated:error})});
 		}).catch((error)=>{rej({lxcNotStart:error});});
 	});
@@ -133,7 +137,11 @@ lxc.prototype.stop = function(){
 		exec(command).then(()=>{
 			this.stateUpdate(1).then(()=>{
 				this.statePrintable = 'Stopped';
-				res(true);
+				const subnet = require('./brs_subnet');
+				Subnet = new subnet();
+				Subnet.route({parent:this.parent},this.ip,'del').then(()=>{
+					res(true);
+				}).catch((error)=>{rej(error)});
 			}).catch((error)=>{rej({stateNotUpdated:error})});
 		}).catch((error)=>{rej({lxcNotStop:error});});
 	});

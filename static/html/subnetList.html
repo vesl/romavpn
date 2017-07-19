@@ -5,7 +5,12 @@
 		<div class="row-grey container" v-for="(subnet,index) in subnets">
 			<h4 class="three columns" v-bind:id=subnet._id>{{subnet.name}}</h4>
 			<div class="nine columns">
-				<img src="/img/loading-small.gif" v-else>
+				<div class="attr"><strong>Network</strong> {{ subnet.network }} </div>
+				<div class="attr"><strong>Netmask</strong> {{ subnet.netmask }} </div>
+				<span  v-if="subnet.netmap.length > 0">
+					<div class="attr"><strong>-> Netmap</strong> {{ subnet.netmap }} </div>
+				</span>
+				<div class="attr"><strong>Hosts</strong><a @click="callHostList(subnet.name)"> List</a></div>
 			</div>
 		</div>
 	</div>

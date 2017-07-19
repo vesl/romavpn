@@ -38,9 +38,10 @@ vues.load.subnetAdd = function(res) {
 vues.handle.subnetAdd = function(res){
 	vues.loading.enable = false;
 	if(res.error) {
-		if(res.error.validationError){
-			if(res.error.validationError.alreadyExists) vues.subnetAdd.errors.push('This subnet already exists');
-		}
-		if(res.error.err) vues.subneAdd.errors.push('Couldnt create LXC container');
+		if(res.error.subnetNotSaved) vues.subnetAdd.errors.push('This name of Subnet already used');
+		if(res.error.invalidNetworks) vues.subnetAdd.errors.push('Invalid network or netmap');
+		if(res.error.subnetAlreadyUsed) vues.subnetAdd.errors.push('Subnet already used');
+		if(res.error.netmapAlreadyUsed) vues.subnetAdd.errors.push('Netmap already used');
+		if(res.error.cantCheckNetmaps) vues.subnetAdd.errors.push('Cant check netmaps');
 	} else vues.call.subnetList(res.parent);
 };

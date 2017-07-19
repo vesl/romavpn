@@ -1,0 +1,13 @@
+<div id="hostList">
+	<p><strong>{{parent}}</strong>'s hosts</p>
+	<button class="button" @click="callAddHost(parent)">add Host</button>
+	<div v-if="hosts.length > 0">
+		<div class="row-grey container" v-for="(host,index) in hosts">
+			<h4 class="three columns" v-bind:id=host._id>{{host.name}}</h4>
+			<div class="nine columns">
+				<div class="attr"><strong>Ip</strong> {{ host.ip }} </div>
+			</div>
+		</div>
+	</div>
+	<div v-else>{{ nohost }}</div>
+</div>

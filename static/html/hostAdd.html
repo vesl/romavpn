@@ -1,0 +1,16 @@
+<div id="hostAdd">
+	<div class="alert error" v-if="errors.length > 0">
+		<li v-for="error in errors">{{ error }}</li>
+	</div>
+	<br>
+	<p>
+		Add a host on subnet <strong>{{ parent }}</strong>
+	</p>
+	<p>
+		<label for="name">Name</label>
+		<input type="text" name="name" placeholder="name" v-model="host_name">
+		<label for="ip">Ip</label>
+		<input type="text" name="ip" placeholder="10.40.1.1" v-model="host_ip"> 
+	</p>
+	<button @click="add" class="button-primary">add</button>
+</div>

@@ -15,6 +15,9 @@ vues.load.subnetList = function(res) {
 		methods : {
 			callAddSubnet : function(parent){
 				vues.call.subnetAdd(parent);
+			},
+			callHostList : function(name){
+				vues.call.hostList(name);
 			}
 		}
 	});

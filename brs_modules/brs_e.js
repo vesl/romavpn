@@ -92,6 +92,13 @@ e.prototype.more.subnet=[
 	[3,'Cant add subnet'],
 ];
 
+e.prototype.more.host=[
+	[0,'Cant list hosts'],
+	[1,'Cant load hostList template'],
+	[2,'Cant load hostAdd template'],
+	[3,'Cant add host'],
+];
+
 e.prototype.done = {};
 e.prototype.done.config=[
 	[0,'Configuration added'],
@@ -112,6 +119,10 @@ e.prototype.done.ovpn = [
 
 e.prototype.done.subnet = [
 	[0,'SUBNET added'],
+];
+
+e.prototype.done.host = [
+	[0,'HOST added'],
 ];
 
 

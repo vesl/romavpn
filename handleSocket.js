@@ -4,7 +4,7 @@ function handleSocket(req,socket,config) {
 	this.req = req;
 	this.socket = socket;
 	this.config = config;
-	this.allowedModules = ['config','vpn','vpnAdd','vpnList','ovpn','vpnControl','subnetList','subnetAdd'];
+	this.allowedModules = ['config','vpn','vpnAdd','vpnList','ovpn','vpnControl','subnetList','subnetAdd','hostList','hostAdd'];
 	this.allowedActions = ['load','update','add','list','start','stop','restart'];
 	this.e = new e(socket);
 }
@@ -61,6 +61,12 @@ handleSocket.prototype.process = function(){
 			break;
 		case 'subnetAdd':
 			this.handleSubnetAdd();
+			break;
+		case 'hostList':
+			this.handleHostList();
+			break;
+		case 'hostAdd':
+			this.handleHostAdd();
 			break;
 	} 
 };
@@ -150,6 +156,26 @@ handleSocket.prototype.handleSubnetAdd = function(){
 			break;
 		case 'add':
 			this.addSubnetAdd();
+			break;
+	}	
+};
+
+//1.5 Host handle
+handleSocket.prototype.handleHostList = function(){
+	switch(this.req.action){
+		case 'load':
+			this.loadHostList();
+			break;
+	}	
+};
+
+handleSocket.prototype.handleHostAdd = function(){
+	switch(this.req.action){
+		case 'load':
+			this.loadHostAdd();
+			break;
+		case 'add':
+			this.addHostAdd();
 			break;
 	}	
 };
@@ -432,6 +458,58 @@ handleSocket.prototype.addSubnetAdd= function() {
 		this.e.error('subnet',3,error);
 		this.socket.emit('res',this.req);
 	});
+};
+
+
+//2.5 host
+
+handleSocket.prototype.loadHostList = function(){
+	this.loadTemplate('hostList').then((html)=>{
+		this.req.html = html;	
+		const host = require('./brs_modules/brs_host.js');
+		var Host = new host();
+		Host.list({parent:this.req.parent}).then((list)=>{
+			this.req.hosts = list;
+			this.socket.emit('res',this.req);
+		}).catch((error)=>{
+			this.req.error = error;
+			this.e.error('host',0,error);
+			this.socket.emit('res',this.req);
+		});
+	}).catch((error)=>{
+		this.req.error = error;
+		this.e.error('host',1,error);
+		this.socket.emit('res',this.req);
+	});
+};
+
+handleSocket.prototype.loadHostAdd = function(){
+	this.loadTemplate('hostAdd').then((html)=>{
+		this.req.html = html;
+		this.socket.emit('res',this.req);
+	}).catch((error)=>{
+		this.req.error = error;
+		this.e.error('host',2,error);
+		this.socket.emit('res',this.req);
+	});
+};
+
+handleSocket.prototype.addHostAdd = function(){
+	const host = require('./brs_modules/brs_host');
+	var Host = new host();
+	Host.parent = this.req.parent;
+	Host.ip = this.req.host_ip;
+	Host.name = this.req.host_name;
+	Host.save().then((saved)=>{
+		this.req.success = true;
+		this.req.host = saved;
+		this.e.info('host',0);
+		this.socket.emit('res',this.req);
+	}).catch((error)=>{
+		this.req.error = error;
+		this.e.error('host',3,error);
+		this.socket.emit('res',this.req);
+	});	
 };
 
 module.exports = handleSocket;

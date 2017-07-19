@@ -9,7 +9,7 @@
 					<div class="attr"><strong>Ip</strong> {{ vpn.loaded.lxc.ip }} </div>
 					<div class="attr"><strong>Opvn configuration</strong>
 						<a  @click="callEditOvpn(vpn.name)" v-if="vpn.loaded.ovpn">Edit</a>
-						<a  @click="callEditOvpn(vpn.name)" v-else="vpn.loaded.ovpn">Create</a>
+						<a  @click="callEditOvpn(vpn.name)" v-else>Create</a>
 					</div>
 					<div class="attr" v-if="vpn.loaded.ovpn"><strong>Subnets</strong><a @click="callSubnetList(vpn.name)"> List</a>
 					</div>

@@ -44,6 +44,12 @@ socket.on('res',function(res){
 			case 'subnetAdd':
 				handleSubnetAdd(res);
 				break;
+			case 'hostList':
+				handleHostList(res);
+				break;
+			case 'hostAdd':
+				handleHostAdd(res);
+				break;
 		}
 	}
 });
@@ -122,6 +128,25 @@ function handleSubnetAdd(res){
 			break;
 		case 'add':
 			vues.handle.subnetAdd(res);
+			break;
+	}
+}
+
+function handleHostList(res){
+	switch(res.action){
+		case 'load':
+			vues.load.hostList(res);
+			break;
+	}
+}
+
+function handleHostAdd(res){
+	switch(res.action){
+		case 'load':
+			vues.load.hostAdd(res);
+			break;
+		case 'add':
+			vues.handle.hostAdd(res);
 			break;
 	}
 }
