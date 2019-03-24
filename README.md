@@ -2,6 +2,7 @@
 
 The purpose of RomanVPN is to connect several lans over a same VPN and using netmap to avoid ip / networks conflict.
 Dns is used to mask the new networks or ip which were netmapped. 
+I've used LXC instead of Docker because I needed to improve my skills on LXC, but it could work perfectly with Docker (and would be better).
 
 Web interface provide an automation of all actions done by the two lines above. 
 
