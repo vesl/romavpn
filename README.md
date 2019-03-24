@@ -1,5 +1,9 @@
 ![Logo](https://raw.githubusercontent.com/vesl/romavpn/master/static/img/logo.png)
 
+The purpose of RomanVPN is to connect several lans over a same VPN and using netmap to avoid ip / networks conflict.
+Dns is used to mask the new networks or ip which were netmapped. 
+Web interface provide an automation of all actions done by the two lines above. 
+
 Required Packages : 
 -------------------
 * NodeJs 7.x
@@ -16,4 +20,4 @@ Install process :
 
 How it works :
 --------------
-Soon...
+Project is in really good way ... but not finished will probably never. Ask me if you need this solution.
